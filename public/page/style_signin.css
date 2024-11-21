@@ -1,0 +1,109 @@
+/* กำหนดสีพื้นหลังให้กับหน้า */
+body {
+    background-color: #e0f2ff;
+    font-family: Arial, sans-serif;
+}
+
+/* กำหนดขนาดและการจัดวางของ container */
+.container {
+    max-width: 400px;
+    width: 100%; /* กำหนดให้เต็ม 100% ภายในขอบเขต max-width */
+    margin: 10px auto; /* auto ด้านซ้ายและขวาจะทำให้กล่องอยู่ตรงกลาง */
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* กำหนดสไตล์ให้กับหัวข้อ */
+h3 {
+    text-align: center;
+    color: #0d47a1;
+    margin-bottom: 20px;
+}
+
+/* กำหนดสไตล์ให้กับปุ่ม */
+.btn-primary, .btn-secondary {
+    margin-right: 10px;   /* ระยะห่างระหว่างปุ่ม */
+    height: 40px;         /* กำหนดความสูงของปุ่ม */
+    line-height: 40px;    /* ทำให้ข้อความอยู่กึ่งกลาง */
+    padding: 0 10px;      /* ปรับ padding ด้านข้าง */
+    width: auto;          /* ให้ความกว้างพอดีกับข้อความ */
+    border: none;  
+}
+
+.btn-primary {
+    background-color: #0d47a1;
+    border-color: #0d47a1;
+}
+
+.btn-primary:hover {
+    background-color: #0b3d91;
+    border-color: #0b3d91;
+}
+
+.btn-secondary {
+    margin-right: 10px;
+    background-color: #616161;
+    border-color: #616161;
+}
+
+.btn-secondary:hover {
+    background-color: #4d4d4d;
+}
+
+.form-button {
+    margin-right: 10px;   /* ระยะห่างระหว่างปุ่ม */
+    height: 40px;         /* กำหนดความสูงของปุ่ม */
+    line-height: 40px;    /* ทำให้ข้อความอยู่กึ่งกลาง */
+    padding: 0 10px;      /* ปรับ padding ด้านข้าง */
+    width: auto;          /* ให้ความกว้างพอดีกับข้อความ */
+    border: none;         /* ถ้าต้องการให้ไม่มีกรอบ */
+}
+
+
+/* กำหนดสไตล์ให้กับ label */
+.form-label {
+    color: #424242;
+    font-weight: bold;
+}
+
+/* สไตล์ input fields */
+.form-control {
+    border: 1px solid #b0bec5;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+/* ลิงก์สำหรับไปยังหน้า signup */
+p a {
+    color: #0d47a1;
+    text-decoration: none;
+}
+
+p a:hover {
+    text-decoration: underline;
+}
+
+/* ตั้งค่า navbar-bg ให้ขยายเต็มหน้าจอและมีสีพื้นหลัง */
+.navbar-bg {
+    width: 100vw; /* ขยายความกว้างให้เต็มหน้าจอ */
+    position: relative;
+    left: 50%; /* ปรับให้ชิดขอบ */
+    transform: translateX(-50%);
+    background-color: #00a8b3; /* สีพื้นหลังที่ต้องการ */
+    padding: 10px 0;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* เพิ่มเงาใต้แถบ */
+}
+
+/* ทำให้ .navbar โปร่งใส */
+.navbar {
+    background-color: transparent !important;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* ป้องกันการเลื่อนในแนวนอน */
+}

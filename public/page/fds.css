@@ -1,0 +1,354 @@
+/* General reset and settings */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Body background */
+body {
+    background-color: #c37b4e;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Navbar styles */
+.navbar {
+    width: 85%;
+    background-color: #FFFDE7;
+    color: rgb(218, 54, 54);
+    padding: 15px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: relative;
+    top: 20px;
+    margin: 0 auto;
+    border-radius: 15px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+}
+
+.navbar .navbar-right {
+    margin-left: auto;
+    display: flex;
+    gap: 10px;
+}
+
+.navbar-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.navbar-right {
+    margin-left: auto; /* บังคับให้ชิดขวาสุด */
+    display: flex;
+    gap: 10px; /* เพิ่มระยะห่างระหว่างปุ่ม */
+}
+
+/* Container settings */
+.container {
+    display: flex;
+    height: 85vh;
+    padding: 20px;
+    background-color: #f5e7de;
+    border-radius: 20px;
+    width: 100%;
+    margin-top: 80px;
+}
+
+/* Sidebar styling */
+.sidebar {
+    width: 20%;
+    background-color: #f5e7de;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px 0;
+    height: 100%;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    width: 100%;
+    padding: 0;
+    flex-grow: 1;
+}
+
+.sidebar ul li {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+}
+
+.sidebar ul li:hover {
+    background-color: #f1d5b8;
+    border-radius: 8px;
+}
+
+.sidebar ul li img {
+    width: 32px;
+    height: 32px;
+    margin-right: 10px;
+}
+
+/* Main Content styling */
+.main-content {
+    flex: 1;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    overflow-y: auto;
+    height: 100%;
+}
+
+/* Message box styling */
+.message-box {
+    max-height: 70vh;
+    overflow-y: auto;
+    width: 100%;
+    background-color: #e3f7e8;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.message-box-title {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* Message Item */
+.message-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    box-sizing: border-box;
+    position: relative; /* ใช้ relative เพื่อใช้ position ของปุ่ม */
+}
+
+.icon-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e74c3c;
+    margin-right: 10px;
+}
+.message-content {
+    flex-grow: 1;
+}
+
+.message-content h3 {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+
+.message-content p {
+    font-size: 12px;
+    color: #777;
+    margin: 3px 0 0;
+}
+
+.message-item:hover {
+    background-color: #f9f9f9;
+}
+
+/* Add button */
+.add-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #28a745;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s;
+}
+
+.add-button:hover {
+    background-color: #218838;
+}
+
+/* Popup Form styling */
+.popup-form {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    max-width: 80%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.close-button {
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.popup-content h2 {
+    margin-top: 0;
+}
+
+.popup-content form label {
+    display: block;
+    margin-top: 10px;
+}
+
+.popup-content form input,
+.popup-content form textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.popup-content form button {
+    margin-top: 15px;
+    padding: 10px;
+    width: 100%;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.popup-content form button:hover {
+    background-color: #218838;
+}
+
+/* จัดตำแหน่งและตกแต่ง mail-item */
+.mail-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
+    position: relative;
+}
+
+.mail-item:hover {
+    background-color: #e3f7e8; /* สีพื้นหลังเมื่อ hover */
+}
+
+/* ซ่อนปุ่มถังขยะตอนเริ่มต้น */
+.delete-btn {
+    display: none;
+    position: absolute;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #e74c3c; /* สีแดงสำหรับถังขยะ */
+    transition: color 0.3s;
+}
+
+.delete-button {
+    position: absolute;
+    right: 15px; /* ปรับระยะห่างจากขอบด้านขวา */
+    top: 50%; /* วางปุ่มตรงกลางในแนวตั้ง */
+    transform: translateY(-50%); /* ทำให้ปุ่มอยู่ตรงกลาง */
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: none; /* ซ่อนปุ่มเริ่มต้น */
+}
+
+.message-item:hover .delete-button {
+    display: inline-block;
+    position: absolute;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.delete-button:hover {
+    color: #c0392b; /* เปลี่ยนสีเมื่อ hover ที่ปุ่ม */
+}
+
+.message-box-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.message-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    position: relative;
+}
+
+.message-content h3 {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+.message-content p {
+    margin: 5px 0;
+}
+
+.delete-button {
+    position: absolute;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+}
+
+
+#search-input {
+    padding: 8px;
+    width: 50%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mail</title>
+    <link rel="stylesheet" href="page/fds.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body style="background-color: #f1f1f1;">
+    <div class="container mt-5">
+        <h2>Welcome to the Message Box</h2>
+        <div class="message-box">
+            <div class="message-box-header">
+                <h2 class="message-box-title">Messages</h2>
+                <input type="text" id="search-input" class="form-control" placeholder="Search by email" onkeyup="filterMessages()" />
+            </div>
+            <div id="messages-container">
+                <!-- Messages will be dynamically loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function filterMessages() {
+            const input = document.getElementById('search-input');
+            const filter = input.value.toLowerCase();
+            const messages = document.querySelectorAll('.message-item');
+
+            messages.forEach(message => {
+                const email = message.querySelector('.message-content h3').innerText.toLowerCase();
+                if (email.includes(filter)) {
+                    message.style.display = "";
+                } else {
+                    message.style.display = "none";
+                }
+            });
+        }
+
+        function fetchMessages() {
+            fetch('/get-messages')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('messages-container');
+                    container.innerHTML = data.messages.map(msg => `
+                        <div class="message-item">
+                            <h3>${msg.sender}</h3>
+                            <p>${msg.subject}</p>
+                        </div>
+                    `).join('');
+                })
+                .catch(error => console.error('Error fetching messages:', error));
+        }
+
+        fetchMessages();
+    </script>
+</body>
+</html>

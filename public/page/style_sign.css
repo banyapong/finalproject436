@@ -1,0 +1,155 @@
+/* Body and Background */
+body {
+    background-color: #E5D2FF; /* Light purple background */
+    font-family: Arial, sans-serif;
+}
+
+/* Container Settings */
+.container {
+    max-width: 500px;
+    width: 100%;
+    margin: 10px auto;
+    padding: 30px;
+    background-color: #FFFFFF;
+    border-radius: 15px; /* Slightly rounded corners */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+/* Header Styling */
+h3 {
+    text-align: center; /* Center-align header text */
+    color: #4B0082; /* Dark purple color */
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Button Styling for Sign In and Go Back */
+.btn-primary, .btn-secondary {
+    height: 40px;
+    line-height: 40px;
+    padding: 0 10px;
+    width: 48%;  /* Set both buttons to the same width */
+    border: none;
+    border-radius: 8px;
+    text-align: center;  /* Align text in the middle */
+    margin-bottom: 10px;  /* Add space between buttons */
+}
+
+.btn-primary {
+    background-color: #007BFF;
+    border-color: #007BFF;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #616161;
+    border-color: #616161;
+}
+
+.btn-secondary:hover {
+    background-color: #4d4d4d;
+}
+
+/* Label Styling */
+.form-label {
+    color: #424242;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Input Fields Styling */
+.form-control {
+    border: 1px solid #b0bec5;
+    border-radius: 10px; /* Rounded corners */
+    background-color: #F3E5FF; /* Light lavender input background */
+    padding: 12px;
+    margin-bottom: 20px;
+    width: 100%; /* Full-width input fields */
+    box-sizing: border-box; /* Ensure padding doesn't affect width */
+}
+
+/* Sign Up Link */
+p a {
+    color: #4B0082; /* Dark purple for link */
+    text-decoration: none;
+}
+
+p a:hover {
+    text-decoration: underline;
+}
+
+/* Navbar Styling */
+.navbar-bg {
+    width: 100%;
+    background-color: #F3E5FF; /* Light purple background */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    margin: 10px auto; /* Center the navbar */
+    padding: 5px 15px; /* Padding inside the navbar */
+    display: flex;
+    justify-content: space-between; /* Space between brand and buttons */
+    align-items: center; /* Align items in the center vertically */
+    max-width: 1000px; /* Optional, to center the content and prevent stretching */
+}
+
+.navbar .navbar-brand {
+    font-weight: bold;
+    color: #800080; /* Dark purple color */
+    font-size: 1.2rem;
+    margin-right: 15px; /* Space between brand and buttons */
+}
+
+.navbar .navbar-nav {
+    display: flex;
+    align-items: center; /* Align buttons vertically with brand */
+    gap: 10px; /* Space between buttons */
+}
+
+.navbar .navbar-nav .nav-item {
+    list-style: none; /* Remove bullet points */
+}
+
+.navbar .navbar-nav .nav-item .btn {
+    padding: 8px 15px;
+    font-size: 14px;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 8px;
+}
+
+.navbar .btn {
+    height: 40px;
+    line-height: 40px;
+    border-radius: 8px;
+    width: auto; /* Buttons will auto-size */
+}
+
+/* Optional: Add more button spacing if needed */
+.navbar .navbar-nav .nav-item .btn {
+    margin-left: 10px;
+}
+
+/* Go Back and Sign In Buttons */
+.d-flex {
+    display: flex;
+    justify-content: space-between; /* Spread buttons apart */
+    gap: 20px; /* Add space between Go Back and Sign In buttons */
+}
+
+/* Specific button widths for Go Back and Sign In */
+.w-48 {
+    width: 48%;
+}
+
+/* Go Back button with the same size as Sign In */
+.form-button {
+    width: auto;
+    display: inline-block;
+}

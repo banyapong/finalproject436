@@ -1,0 +1,67 @@
+/* General Page Background */
+body {
+    background-color: #F3E5FF; /* Light purple background */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Navbar Styling */
+.navbar-bg {
+    background-color: #FFF8E1; /* Light cream color for navbar */
+    border-radius: 10px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 10px 20px;
+    width: 95%; /* Makes navbar almost full width */
+    max-width: 1000px; /* Sets a maximum width */
+    margin: 20px auto; /* Centers the navbar */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Navbar Brand and Links Styling */
+.navbar .navbar-brand {
+    font-weight: bold;
+    color: #FF6F00; /* Orange color to match logo text */
+    font-size: 1.2rem;
+    margin-right: 15px;
+}
+
+.navbar .navbar-nav .nav-item .btn {
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+/* Logo and Header Styling */
+.company-logo {
+    width: 120px; /* Adjust size as needed */
+    margin-bottom: 10px;
+}
+
+.display-4 {
+    color: #FF6F00; /* Orange color to match logo text */
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.display-6 {
+    color: #BDBDBD; /* Light grey color for subtitle */
+    font-weight: normal;
+}
+
+/* Center Text and Content */
+.text-center {
+    text-align: center;
+}
+
+/* Container for Main Content */
+.main-container {
+    background-color: #FFEBE5; /* Light peach color */
+    border-radius: 15px;
+    padding: 40px 20px;
+    max-width: 800px; /* Centered content with maximum width */
+    margin: 30px auto; /* Centers the main content */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
