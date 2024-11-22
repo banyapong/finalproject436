@@ -1,4 +1,4 @@
-/* General reset and settings */
+/* General Reset */
 * {
     margin: 0;
     padding: 0;
@@ -6,87 +6,118 @@
     font-family: Arial, sans-serif;
 }
 
-/* Body background */
+/* Body */
 body {
     background-color: #c37b4e;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
-    overflow-x: hidden;
-}
-
-/* Navbar styles */
-.navbar {
-    width: 85%;
-    background-color: #FFFDE7;
-    color: rgb(218, 54, 54);
-    padding: 15px 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    position: relative;
-    top: 20px;
-    margin: 0 auto;
-    border-radius: 15px;
-    z-index: 1000;
-    display: flex;
+    justify-content: flex-start;
     align-items: center;
 }
 
-.navbar .navbar-right {
-    margin-left: auto;
+/* Navbar */
+.navbar {
+    width: 90%; /* ลดความกว้าง */
+    background-color: #FFFDE7;
+    color: #333;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between; /* ดันปุ่ม Logout ไปขวาสุด */
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.navbar .btn {
+    padding: 8px 16px;
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.navbar .btn:hover {
+    background-color: #c0392b;
+}
+
+.main-layout {
+    display: flex;
+    width: 90%;
+    margin: 20px auto;
+    gap: 20px; /* ระยะห่างระหว่าง Sidebar และ Container */
+    align-items: flex-start; /* จัดให้อยู่ด้านบน */
+}
+
+.navbar-right {
     display: flex;
     gap: 10px;
 }
 
-.navbar-container {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-}
-
-.navbar-right {
-    margin-left: auto; /* บังคับให้ชิดขวาสุด */
-    display: flex;
-    gap: 10px; /* เพิ่มระยะห่างระหว่างปุ่ม */
-}
-
-/* Container settings */
+/* Container */
 .container {
-    display: flex;
-    height: 85vh;
+    flex: 1;
+    width: 75%;
+    height: 75vh;
     padding: 20px;
-    background-color: #f5e7de;
-    border-radius: 20px;
-    width: 100%;
-    margin-top: 80px;
+    display: flex;
+    justify-content: center; /* สำหรับ logo ให้อยู่ตรงกลาง */
+    align-items: center;    /* สำหรับ logo ให้อยู่ตรงกลาง */
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    margin-left: 20px;
+    overflow: hidden;
+    max-width: calc(100% - 300px);
+    position: relative; /* ทำให้สามารถควบคุมเนื้อหาเพิ่มเติมได้ */
 }
 
-/* Sidebar styling */
+.container.active-content {
+    justify-content: flex-start; /* ให้เนื้อหาแสดงอยู่ด้านบน */
+    align-items: flex-start;    /* ให้เนื้อหาแสดงอยู่ด้านบน */
+    padding-top: 20px;          /* เพิ่มระยะห่างด้านบนสำหรับเนื้อหา */
+}
+
+.container .logo {
+    max-width: calc(50% + 1vw); /* ปรับขนาดโลโก้ตามจอ */
+    height: auto;
+}
+
+/* Sidebar */
 .sidebar {
-    width: 20%;
+    width: 20%; /* กำหนดความกว้าง Sidebar คงที่ */
+    max-width: 300px; /* กำหนดความกว้างสูงสุด */
+    min-width: 200px; /* กำหนดความกว้างต่ำสุด */
     background-color: #f5e7de;
+    padding: 10px 15px; /* ปรับ Padding */
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding: 20px 0;
-    height: 100%;
+    gap: 20px;
+    border-radius: 10px;
+    border-right: 2px solid #c37b4e; /* แยก Sidebar ออกจาก Container */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: auto; /* อิสระจาก Container */
+    max-height: 500px;
+    overflow-y: auto; /* เพิ่ม Scrollbar หากเนื้อหาเกินขอบเขต */
 }
 
 .sidebar ul {
-    list-style-type: none;
+    list-style: none;
     width: 100%;
-    padding: 0;
-    flex-grow: 1;
 }
 
 .sidebar ul li {
     display: flex;
     align-items: center;
-    padding: 10px;
-    font-size: 16px;
+    padding: 15px 10px;
+    font-size: calc(14px + 0.5vw); /* ฟอนต์จะเพิ่มขึ้นตามขนาดจอ */
     color: #333;
     cursor: pointer;
     transition: background-color 0.3s;
-    width: 100%;
 }
 
 .sidebar ul li:hover {
@@ -95,22 +126,30 @@ body {
 }
 
 .sidebar ul li img {
-    width: 32px;
-    height: 32px;
+    width: calc(20px + 0.5vw); /* ปรับขนาดไอคอนตามจอ */
+    height: auto;
     margin-right: 10px;
 }
 
-/* Main Content styling */
+/* Main Content */
 .main-content {
-    flex: 1;
-    padding: 20px;
+    width: 75%;
+    margin-left: 5%;
     background-color: #ffffff;
     border-radius: 10px;
-    overflow-y: auto;
-    height: 100%;
+    padding: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    display: block;
+    overflow: auto;
 }
 
-/* Message box styling */
+/* Logo in Main Content */
+.main-content img {
+    max-width: 70%;
+    max-height: 70%;
+}
+
+/* Message Box */
 .message-box {
     max-height: 70vh;
     overflow-y: auto;
@@ -121,10 +160,18 @@ body {
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.message-box-title {
-    font-size: 18px;
-    color: #333;
-    margin-bottom: 10px;
+.message-box-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+#search-input {
+    padding: 8px;
+    width: 50%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
 }
 
 /* Message Item */
@@ -132,22 +179,18 @@ body {
     display: flex;
     align-items: center;
     padding: 10px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
     border-radius: 8px;
-    background-color: #fff;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    box-sizing: border-box;
-    position: relative; /* ใช้ relative เพื่อใช้ position ของปุ่ม */
+    transition: background-color 0.3s;
+    position: relative;
 }
 
-.icon-circle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: #e74c3c;
-    margin-right: 10px;
+.message-item:hover {
+    background-color: #e3f7e8;
 }
+
 .message-content {
     flex-grow: 1;
 }
@@ -156,20 +199,37 @@ body {
     font-size: 14px;
     font-weight: bold;
     color: #333;
-    margin: 0;
 }
 
 .message-content p {
     font-size: 12px;
     color: #777;
-    margin: 3px 0 0;
+    margin-top: 5px;
 }
 
-.message-item:hover {
-    background-color: #f9f9f9;
+/* Delete Button */
+.delete-button {
+    position: absolute;
+    right: 10px;
+    background-color: transparent;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+    display: none;
 }
 
-/* Add button */
+.message-item:hover .delete-button {
+    display: inline-block;
+}
+
+.delete-button:hover {
+    background-color: #c0392b;
+}
+
+/* Add Button */
 .add-button {
     position: fixed;
     bottom: 20px;
@@ -192,8 +252,8 @@ body {
     background-color: #218838;
 }
 
-/* Popup Form styling */
-.popup-form {
+/* Popup */
+.popup-form, .popup-mail {
     display: none;
     position: fixed;
     top: 0;
@@ -255,100 +315,91 @@ body {
     background-color: #218838;
 }
 
-/* จัดตำแหน่งและตกแต่ง mail-item */
-.mail-item {
+.popup-detail {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
+    justify-content: center;
     align-items: center;
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s;
-    position: relative;
+    z-index: 999;
 }
 
-.mail-item:hover {
-    background-color: #e3f7e8; /* สีพื้นหลังเมื่อ hover */
+.popup-content-detail {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 30px;
+    width: 60%;
+    max-width: 800px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: left;
 }
 
-/* ซ่อนปุ่มถังขยะตอนเริ่มต้น */
-.delete-btn {
-    display: none;
-    position: absolute;
-    right: 10px;
-    background-color: transparent;
+.btn-back {
+    background: none;
     border: none;
-    font-size: 20px;
+    font-size: 16px;
+    color: #333;
     cursor: pointer;
-    color: #e74c3c; /* สีแดงสำหรับถังขยะ */
-    transition: color 0.3s;
-}
-
-.delete-button {
-    position: absolute;
-    right: 15px; /* ปรับระยะห่างจากขอบด้านขวา */
-    top: 50%; /* วางปุ่มตรงกลางในแนวตั้ง */
-    transform: translateY(-50%); /* ทำให้ปุ่มอยู่ตรงกลาง */
-    background-color: #ff4d4d;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    display: none; /* ซ่อนปุ่มเริ่มต้น */
-}
-
-.message-item:hover .delete-button {
+    margin-bottom: 20px;
     display: inline-block;
-    position: absolute;
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
 }
 
-.delete-button:hover {
-    color: #c0392b; /* เปลี่ยนสีเมื่อ hover ที่ปุ่ม */
+.email-detail {
+    font-size: 16px;
 }
 
-.message-box-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 15px;
+.email-detail h2 {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 10px;
 }
 
-.message-item {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
-    position: relative;
-}
-
-.message-content h3 {
-    margin: 0;
-    font-size: 1.2em;
-}
-
-.message-content p {
+.email-detail p {
     margin: 5px 0;
+    line-height: 1.6;
 }
 
-.delete-button {
-    position: absolute;
-    right: 10px;
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 1.2em;
+/* Media Queries for responsiveness */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .main-layout {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .sidebar {
+        width: 100%;
+        align-items: center;
+    }
+
+    .container {
+        width: 100%;
+        height: auto;
+    }
 }
 
+@media (min-width: 1600px) {
+    .sidebar {
+        max-width: 280px;
+    }
+    .container {
+        max-width: calc(100% - 280px);
+    }
+}
 
-#search-input {
-    padding: 8px;
-    width: 50%;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
+@media (max-width: 1200px) {
+    .sidebar {
+        max-width: 220px;
+    }
+    .container {
+        max-width: calc(100% - 220px);
+    }
 }

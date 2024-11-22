@@ -1,83 +1,175 @@
-/* Body and Background */
+/* General Reset */
 body {
-    background-color: #E5D2FF; /* Light purple background */
+    background-color: #ceb5f1; /* Light purple background */
     font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-/* Container Settings */
+/* Navbar */
+.navbar {
+    width: 85%;
+    background-color: #d8b1e7;
+    padding: 10px 20px;
+    margin: 20px auto;
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    color: #800080; /* Dark purple */
+    font-size: 1.2rem;
+}
+
+.navbar-nav {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar-btn {
+    padding: 8px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.navbar-btn-primary {
+    background-color: #007BFF;
+    color: white;
+}
+
+.navbar-btn-primary:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.navbar-btn-secondary {
+    background-color: #616161;
+    color: white;
+}
+
+.navbar-btn-secondary:hover {
+    background-color: #4d4d4d;
+    transform: translateY(-2px);
+}
+
+/* Container */
 .container {
     max-width: 500px;
     width: 100%;
-    margin: 10px auto;
     padding: 30px;
+    margin: 20px auto;
     background-color: #FFFFFF;
-    border-radius: 15px; /* Slightly rounded corners */
+    border-radius: 15px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: stretch;
 }
 
-/* Header Styling */
 h3 {
-    text-align: center; /* Center-align header text */
-    color: #4B0082; /* Dark purple color */
+    text-align: center;
+    color: #4B0082;
     font-weight: bold;
     margin-bottom: 20px;
 }
 
-/* Button Styling for Sign In and Go Back */
-.btn-primary, .btn-secondary {
-    height: 40px;
-    line-height: 40px;
-    padding: 0 10px;
-    width: 48%;  /* Set both buttons to the same width */
-    border: none;
-    border-radius: 8px;
-    text-align: center;  /* Align text in the middle */
-    margin-bottom: 10px;  /* Add space between buttons */
-}
-
-.btn-primary {
-    background-color: #007BFF;
-    border-color: #007BFF;
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
-}
-
-.btn-secondary {
-    background-color: #616161;
-    border-color: #616161;
-}
-
-.btn-secondary:hover {
-    background-color: #4d4d4d;
-}
-
-/* Label Styling */
 .form-label {
-    color: #424242;
-    font-weight: bold;
     display: block;
+    font-weight: bold;
     margin-bottom: 5px;
+    color: #424242;
+    text-align: left;
 }
 
-/* Input Fields Styling */
 .form-control {
-    border: 1px solid #b0bec5;
-    border-radius: 10px; /* Rounded corners */
-    background-color: #F3E5FF; /* Light lavender input background */
+    width: calc(100% - 20px);
     padding: 12px;
     margin-bottom: 20px;
-    width: 100%; /* Full-width input fields */
-    box-sizing: border-box; /* Ensure padding doesn't affect width */
+    border: 1px solid #b0bec5;
+    border-radius: 10px;
+    background-color: #F3E5FF;
 }
 
-/* Sign Up Link */
+/* Buttons in the container */
+.btn-container {
+    display: flex;
+    justify-content: space-between; /* ให้ปุ่มห่างกันเล็กน้อย */
+    gap: 20px; /* เพิ่มระยะห่างระหว่างปุ่ม */
+    margin-top: 20px; /* เพิ่มระยะห่างด้านบน */
+}
+
+.btn-primary,
+.btn-secondary {
+    flex: 1; /* ให้ปุ่มขยายตามพื้นที่ที่เหลือ */
+    padding: 10px 20px; /* เพิ่มความสูงและความกว้างของปุ่ม */
+    font-size: 16px; /* ขนาดตัวอักษร */
+    font-weight: bold; /* เพิ่มความหนาของตัวอักษร */
+    text-align: center;
+    border-radius: 8px; /* มุมโค้งมน */
+    cursor: pointer;
+    transition: all 0.3s ease; /* เพิ่มเอฟเฟกต์ตอน hover */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* เพิ่มเงา */
+    border: none; /* เอาเส้นขอบออก */
+}
+
+.container-btn {
+    flex: 1;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
+.container-btn-primary {
+    background-color: #007BFF;
+    color: white;
+}
+
+.container-btn-primary:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.container-btn-secondary {
+    background-color: #616161;
+    color: white;
+}
+
+.container-btn-secondary:hover {
+    background-color: #4d4d4d;
+    transform: translateY(-2px);
+}
+
+/* Links */
 p a {
-    color: #4B0082; /* Dark purple for link */
+    color: #4B0082;
     text-decoration: none;
 }
 
@@ -85,71 +177,18 @@ p a:hover {
     text-decoration: underline;
 }
 
-/* Navbar Styling */
-.navbar-bg {
-    width: 100%;
-    background-color: #F3E5FF; /* Light purple background */
-    border-radius: 10px; /* Rounded corners */
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-    margin: 10px auto; /* Center the navbar */
-    padding: 5px 15px; /* Padding inside the navbar */
-    display: flex;
-    justify-content: space-between; /* Space between brand and buttons */
-    align-items: center; /* Align items in the center vertically */
-    max-width: 1000px; /* Optional, to center the content and prevent stretching */
-}
+/* Responsive Design */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: center;
+    }
 
-.navbar .navbar-brand {
-    font-weight: bold;
-    color: #800080; /* Dark purple color */
-    font-size: 1.2rem;
-    margin-right: 15px; /* Space between brand and buttons */
-}
+    .navbar-nav {
+        gap: 5px;
+    }
 
-.navbar .navbar-nav {
-    display: flex;
-    align-items: center; /* Align buttons vertically with brand */
-    gap: 10px; /* Space between buttons */
-}
-
-.navbar .navbar-nav .nav-item {
-    list-style: none; /* Remove bullet points */
-}
-
-.navbar .navbar-nav .nav-item .btn {
-    padding: 8px 15px;
-    font-size: 14px;
-    height: 40px;
-    line-height: 40px;
-    border-radius: 8px;
-}
-
-.navbar .btn {
-    height: 40px;
-    line-height: 40px;
-    border-radius: 8px;
-    width: auto; /* Buttons will auto-size */
-}
-
-/* Optional: Add more button spacing if needed */
-.navbar .navbar-nav .nav-item .btn {
-    margin-left: 10px;
-}
-
-/* Go Back and Sign In Buttons */
-.d-flex {
-    display: flex;
-    justify-content: space-between; /* Spread buttons apart */
-    gap: 20px; /* Add space between Go Back and Sign In buttons */
-}
-
-/* Specific button widths for Go Back and Sign In */
-.w-48 {
-    width: 48%;
-}
-
-/* Go Back button with the same size as Sign In */
-.form-button {
-    width: auto;
-    display: inline-block;
+    .container {
+        margin: 20px auto;
+    }
 }
