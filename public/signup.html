@@ -7,53 +7,63 @@
     <link rel="stylesheet" href="page/style_sign.css">
 </head>
 <body>
+    <!-- Navbar -->
     <nav class="navbar">
         <a class="navbar-brand" href="index.html">LTCH Project CS436</a>
-        <div class="navbar-nav ms-auto d-flex">
-            <a class="navbar-btn navbar-btn-secondary" href="signin.html">Sign In</a>
-            <a class="navbar-btn navbar-btn-primary" href="signup.html">Sign Up</a>
-        </div>  
+        <div class="navbar-nav">
+            <a href="signin.html" class="btn btn-primary nav-link" id="signin-link">Sign In</a>
+            <a href="signup.html" class="btn btn-secondary nav-link" id="signup-link">Sign Up</a>
+        </div>
     </nav>
 
-    <div class="container">
+    <!-- Sign Up Form -->
+    <div class="form-container">
         <h3>Register Page</h3>
         <form id="signup-form" method="POST">
-            <div class="mb-3">
-                <label for="email" class="form-label">Email Address</label>
-                <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required />
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
             </div>
-            <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username" required />
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
             </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required />
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
             </div>
-            <div class="mb-3">
-                <label for="confirmPassword" class="form-label">Confirm Password</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Confirm your password" required />
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
             </div>
-            <div class="mb-3">
-                <label for="firstName" class="form-label">First Name</label>
-                <input type="text" id="firstName" name="firstName" class="form-control" placeholder="Enter your first name" required />
+            <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" name="firstName" placeholder="Enter your first name" required>
             </div>
-            <div class="mb-3">
-                <label for="lastName" class="form-label">Last Name</label>
-                <input type="text" id="lastName" name="lastName" class="form-control" placeholder="Enter your last name" required />
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" name="lastName" placeholder="Enter your last name" required>
             </div>
 
-            <!-- ปุ่ม Go Back และ Sign Up -->
-            <div class="btn-container">
-                <a href="index.html" class="container-btn container-btn-secondary">Go Back</a>
-                <button type="submit" class="container-btn container-btn-primary">Sign In</button>
-            </div>            
+            <!-- Buttons for 'Go Back' and 'Sign Up' -->
+            <div class="form-buttons">
+                <a href="index.html" class="btn btn-secondary">Go Back</a>
+                <button type="submit" class="btn btn-primary">Sign Up</button>
+            </div>
         </form>
-
-        <p class="mt-3 text-center">Already have an account? Let <a href="signin.html">Sign In!</a></p>
+        <p class="signup-link">Already have an account? Let <a href="signin.html">Sign In!</a></p>
     </div>
 
     <script>
+        // check-session.js
+        fetch('/check-session')
+            .then(response => response.json())
+            .then(data => {
+                if (data.loggedIn) {
+                    window.location.href = '/mail';
+                }
+            });
+
         document.getElementById('signup-form').addEventListener('submit', async (e) => {
             e.preventDefault();  // ป้องกันการรีเฟรชหน้าเมื่อส่งฟอร์ม
 
@@ -87,5 +97,6 @@
             }
         });
     </script>
+<script src="/path-to-js/check-session.js"></script>
 </body>
 </html>

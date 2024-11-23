@@ -6,8 +6,7 @@
     "start": "node server.js",
     "build": "echo 'No build step required'",
     "test": "echo \"Error: no test specified\" && exit 1"
-}
-,
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -15,9 +14,11 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.3",
+    "connect-redis": "^7.1.1",
     "express": "^4.21.1",
     "express-session": "^1.18.1",
     "mssql": "^11.0.1",
-    "mysql2": "^3.11.4"
+    "mysql2": "^3.11.4",
+    "redis": "^4.7.0"
   }
 }

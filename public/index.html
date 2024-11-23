@@ -1,24 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to Node.js Login System</title>
-  <link rel="stylesheet" href="page/style_sign.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LTCH Project</title>
+    <link rel="stylesheet" href="page/test.css">
 </head>
 <body>
-  <nav class="navbar">
-    <a class="navbar-brand" href="index.html">LTCH Project CS436</a>
-    <div class="navbar-nav ms-auto d-flex">
-        <a class="navbar-btn navbar-btn-secondary" href="signin.html">Sign In</a>
-        <a class="navbar-btn navbar-btn-primary" href="signup.html">Sign Up</a>
-    </div>        
-</nav> 
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a class="navbar-brand" href="#">LTCH Project CS436</a>
+        <div class="navbar-nav">
+            <a href="signin.html" class="btn btn-primary nav-link" id="signin-link">Sign In</a>
+            <a href="signup.html" class="btn btn-secondary nav-link" id="signup-link">Sign Up</a>
+        </div>
+    </nav>
 
-  <h2>Welcome to the Node.js Login System</h2>
-  <div>
-    <a href="/signin">Sign In</a>
-    <a href="/signup">Sign Up</a>
-  </div>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <h1>Welcome to LTCH Project</h1>
+        <p>Your smart login and mail system</p>
+        <div class="btn-group">
+            <a href="signin.html" class="btn-large btn-primary">Sign In</a>
+            <a href="signup.html" class="btn-large btn-outline">Sign Up</a>
+        </div>
+    </div>
+    
+    <div class="frame"></div>
+    <div class="frame"></div>
+    <div class="frame"></div>
+    <div class="frame"></div>
+
+    <!-- Transition Overlay -->
+    <div id="overlay"></div>
+
+    </section>
+
+    <script>
+        // check-session.js
+        fetch('/check-session')
+          .then(response => response.json())
+          .then(data => {
+              if (data.loggedIn) {
+                  window.location.href = '/mail';
+              }
+          });
+
+    </script>
+
+<script src="/path-to-js/check-session.js"></script>
 </body>
 </html>

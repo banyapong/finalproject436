@@ -1,170 +1,281 @@
 /* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
 body {
-    background-color: #ceb5f1; /* Light purple background */
+    background: linear-gradient(-45deg, #D1C4E9, #E8DFFF, #C37B4E, #F5E3D9);
+    background-size: 300% 300%;
+    animation: gradient-shift 10s ease infinite;
+    overflow: hidden;
+    position: relative;
+    color: #333;
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
+    min-height: 100vh;
+}
+
+/* Overlay for Page Transition */
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #4B0082;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease-in-out;
+}
+
+#overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* Animation Frames */
+@keyframes gradient-shift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Floating Frames */
+.frame {
+    position: absolute;
+    border-radius: 50%;
+    animation: float 15s ease-in-out infinite;
+    opacity: 0.8;
+    z-index: 1;
+}
+
+.frame:nth-child(1) {
+    background: rgba(255, 200, 255, 0.4);
+    width: 150px;
+    height: 150px;
+    top: 10%;
+    left: 5%;
+    animation-duration: 12s;
+}
+
+.frame:nth-child(2) {
+    background: rgba(200, 255, 255, 0.3);
+    width: 200px;
+    height: 200px;
+    top: 20%;
+    right: 10%;
+    animation-duration: 10s;
+}
+
+.frame:nth-child(3) {
+    background: rgba(255, 255, 200, 0.4);
+    width: 100px;
+    height: 100px;
+    bottom: 15%;
+    left: 15%;
+    animation-duration: 15s;
+}
+
+.frame:nth-child(4) {
+    background: rgba(200, 200, 255, 0.5);
+    width: 120px;
+    height: 120px;
+    bottom: 10%;
+    right: 20%;
+    animation-duration: 8s;
+}
+
+/* Floating Animation */
+@keyframes float {
+    0% {
+        transform: translate(0, 0);
+    }
+    50% {
+        transform: translate(30px, -30px);
+    }
+    100% {
+        transform: translate(0, 0);
+    }
 }
 
 /* Navbar */
 .navbar {
-    width: 85%;
-    background-color: #d8b1e7;
-    padding: 10px 20px;
-    margin: 20px auto;
-    border-radius: 15px;
+    width: 90%;
+    max-width: 1200px;
+    background: rgba(255, 255, 255, 0.9);
+    margin-top: 20px;
+    padding: 15px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.navbar-brand-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-grow: 1;
+.navbar .nav-link {
+    font-size: 1rem;
+    color: #4B0082;
+    text-decoration: none;
+    margin-left: 15px;
+    transition: color 0.3s ease-in-out;
 }
 
-.navbar-brand {
+.navbar .nav-link:hover {
+    color: #37006b;
+}
+
+.navbar .navbar-brand {
+    font-size: 1.5rem;
     font-weight: bold;
-    color: #800080; /* Dark purple */
-    font-size: 1.2rem;
+    color: #4B0082;
+    text-decoration: none;
 }
 
-.navbar-nav {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 10px;
-}
-
-.navbar-btn {
-    padding: 8px 15px;
-    font-size: 14px;
+.navbar .navbar-nav .btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 0.9rem;
     font-weight: bold;
+    transition: all 0.3s ease-in-out;
+    text-decoration: none;
     text-align: center;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    margin-left: 10px;
+}
+
+.navbar .btn-primary {
+    background-color: #4B0082;
+    color: white;
     border: none;
 }
 
-.navbar-btn-primary {
-    background-color: #007BFF;
-    color: white;
+.navbar .btn-primary:hover {
+    background-color: #37006B;
+    transform: scale(1.1);
 }
 
-.navbar-btn-primary:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px);
-}
-
-.navbar-btn-secondary {
-    background-color: #616161;
-    color: white;
-}
-
-.navbar-btn-secondary:hover {
-    background-color: #4d4d4d;
-    transform: translateY(-2px);
-}
-
-/* Container */
-.container {
-    max-width: 500px;
-    width: 100%;
-    padding: 30px;
-    margin: 20px auto;
-    background-color: #FFFFFF;
-    border-radius: 15px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: stretch;
-}
-
-h3 {
-    text-align: center;
+.navbar .btn-secondary {
+    background-color: white;
     color: #4B0082;
-    font-weight: bold;
-    margin-bottom: 20px;
+    border: 2px solid #4B0082;
 }
 
-.form-label {
-    display: block;
+.navbar .btn-secondary:hover {
+    background-color: #4B0082;
+    color: white;
+}
+
+/* Form Container */
+.form-container {
+    margin-top: 50px;
+    width: 100%;
+    max-width: 500px;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.form-container h3 {
+    color: #4B0082;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
     font-weight: bold;
-    margin-bottom: 5px;
-    color: #424242;
+}
+
+.form-group {
+    margin-bottom: 20px;
     text-align: left;
 }
 
-.form-control {
-    width: calc(100% - 20px);
-    padding: 12px;
-    margin-bottom: 20px;
-    border: 1px solid #b0bec5;
-    border-radius: 10px;
-    background-color: #F3E5FF;
+.form-group label {
+    font-size: 1rem;
+    color: #4B0082;
+    margin-bottom: 5px;
+    display: block;
 }
 
-/* Buttons in the container */
-.btn-container {
-    display: flex;
-    justify-content: space-between; /* ให้ปุ่มห่างกันเล็กน้อย */
-    gap: 20px; /* เพิ่มระยะห่างระหว่างปุ่ม */
-    margin-top: 20px; /* เพิ่มระยะห่างด้านบน */
-}
-
-.btn-primary,
-.btn-secondary {
-    flex: 1; /* ให้ปุ่มขยายตามพื้นที่ที่เหลือ */
-    padding: 10px 20px; /* เพิ่มความสูงและความกว้างของปุ่ม */
-    font-size: 16px; /* ขนาดตัวอักษร */
-    font-weight: bold; /* เพิ่มความหนาของตัวอักษร */
-    text-align: center;
-    border-radius: 8px; /* มุมโค้งมน */
-    cursor: pointer;
-    transition: all 0.3s ease; /* เพิ่มเอฟเฟกต์ตอน hover */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* เพิ่มเงา */
-    border: none; /* เอาเส้นขอบออก */
-}
-
-.container-btn {
-    flex: 1;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    text-align: center;
+.form-group input {
+    width: 100%;
+    padding: 10px;
     border-radius: 8px;
+    border: 1px solid #b0bec5;
+    background-color: #F3E5FF;
+    outline: none;
+    font-size: 1rem;
+    transition: all 0.3s ease-in-out;
+}
+
+.form-group input:focus {
+    border-color: #4B0082;
+    box-shadow: 0 0 8px rgba(75, 0, 130, 0.2);
+}
+
+.form-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.form-buttons .btn {
+    width: 48%;
+    padding: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    text-align: center;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+}
+
+.form-buttons .btn-primary {
+    background-color: #4B0082;
+    color: #ffffff;
     border: none;
 }
 
-.container-btn-primary {
-    background-color: #007BFF;
-    color: white;
+.form-buttons .btn-primary:hover {
+    background-color: #37006b;
 }
 
-.container-btn-primary:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px);
+.form-buttons .btn-secondary {
+    background-color: #ffffff;
+    color: #4B0082;
+    border: 2px solid #4B0082;
 }
 
-.container-btn-secondary {
-    background-color: #616161;
-    color: white;
+.form-buttons .btn-secondary:hover {
+    background-color: #4B0082;
+    color: #ffffff;
 }
 
-.container-btn-secondary:hover {
-    background-color: #4d4d4d;
-    transform: translateY(-2px);
+.signup-link {
+    margin-top: 15px;
+    font-size: 0.9rem;
+}
+
+.signup-link a {
+    color: #4B0082;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.signup-link a:hover {
+    text-decoration: underline;
 }
 
 /* Links */
@@ -190,5 +301,82 @@ p a:hover {
 
     .container {
         margin: 20px auto;
+    }
+}
+
+/* Transition Overlay */
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom right, #d8b1e7, #ceb5f1);
+    z-index: 9999;
+    transform: scale(0);
+    transition: transform 0.8s ease-in-out;
+    transform-origin: center;
+    pointer-events: none;
+}
+
+#overlay.active {
+    transform: scale(1);
+}
+
+/* Floating Frames */
+.frame {
+    position: absolute;
+    border-radius: 50%;
+    animation: float 15s ease-in-out infinite;
+    opacity: 0.8;
+    z-index: 1;
+}
+
+.frame:nth-child(1) {
+    background: rgba(255, 200, 255, 0.4);
+    width: 150px;
+    height: 150px;
+    top: 10%;
+    left: 5%;
+    animation-duration: 12s;
+}
+
+.frame:nth-child(2) {
+    background: rgba(200, 255, 255, 0.3);
+    width: 200px;
+    height: 200px;
+    top: 20%;
+    right: 10%;
+    animation-duration: 10s;
+}
+
+.frame:nth-child(3) {
+    background: rgba(255, 255, 200, 0.4);
+    width: 100px;
+    height: 100px;
+    bottom: 15%;
+    left: 15%;
+    animation-duration: 15s;
+}
+
+.frame:nth-child(4) {
+    background: rgba(200, 200, 255, 0.5);
+    width: 120px;
+    height: 120px;
+    bottom: 10%;
+    right: 20%;
+    animation-duration: 8s;
+}
+
+/* Floating Animation */
+@keyframes float {
+    0% {
+        transform: translate(0, 0);
+    }
+    50% {
+        transform: translate(30px, -30px);
+    }
+    100% {
+        transform: translate(0, 0);
     }
 }

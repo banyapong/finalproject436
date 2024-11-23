@@ -4,28 +4,59 @@ const mssql = require('mssql');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
+const RedisStore = require('connect-redis').default; // ใช้ .default สำหรับการสร้าง store
+const { createClient } = require('redis'); // ใช้ createClient จาก redis
 
 const app = express();
-const port = process.env.PORT || 3000; // ปรับพอร์ตให้รองรับ environment variables
+const port = process.env.PORT || 3000;
+
+// สร้าง Redis client
+const redisClient = createClient({
+    socket: {
+        host: '127.0.0.1',
+        port: 6379,
+    },
+});
+
+// เชื่อมต่อ Redis client
+redisClient.on('error', (err) => console.error('Redis Client Error', err));
+
+(async () => {
+    try {
+        await redisClient.connect();
+        console.log('Connected to Redis');
+    } catch (err) {
+        console.error('Failed to connect to Redis:', err);
+    }
+})();
+
+// ตั้งค่า session ด้วย RedisStore
+app.use(
+    session({
+        store: new RedisStore({ client: redisClient }), // กำหนด client สำหรับ RedisStore
+        secret: 'your-secret-key', // กำหนด secret key สำหรับ session
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            secure: false, // ใช้ true หากใช้ HTTPS
+            httpOnly: true,
+            maxAge: 24 * 60 * 60 * 1000, // อายุ session 1 วัน
+        },
+    })
+);
 
 // การตั้งค่า Body Parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // การตั้งค่า Session
-app.use(
-    session({
-        secret: 'yourSecretKey',
-        resave: false,
-        saveUninitialized: true,
-        cookie: {
-            secure: process.env.NODE_ENV === 'production',
-            httpOnly: true,
-            maxAge: 1000 * 60 * 60 * 2,
-        },
-    })
-);
-
+app.use(session({
+    store: new RedisStore({ client: redisClient }),
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false, httpOnly: true, maxAge: 24 * 60 * 60 * 1000 } // 1 วัน
+}));
 
 // Static Files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -41,7 +72,7 @@ const dbConfig = {
         trustServerCertificate: true,
         requestTimeout: 30000, // เพิ่ม requestTimeout เพื่อป้องกันการ timeout เร็วเกินไป
     },
-};
+}; 
 
 // Function to Connect to Database with Retry Logic
 const connectWithRetry = async () => {
@@ -60,6 +91,22 @@ mssql.connect(dbConfig)
     .then(() => console.log("Connected to SQL Server"))
     .catch(err => console.error('SQL Server connection failed', err));
 
+const checkNotLoggedIn = (req, res, next) => {
+    if (req.session && req.session.user) {
+        // หากล็อกอินอยู่ ให้ Redirect ไปหน้า Mail
+        return res.redirect('/mail');
+    }
+    next();
+};
+
+const checkLoggedIn = (req, res, next) => {
+    if (!req.session || !req.session.user) {
+        // หากไม่ได้ล็อกอิน ให้ Redirect ไปหน้า Signin
+        return res.redirect('/signin');
+    }
+    next();
+};
+    
 // Middleware for Login Check
 function requireLogin(req, res, next) {
     if (!req.session || !req.session.user) {
@@ -84,15 +131,22 @@ app.get('/logout', (req, res) => {
             console.error('Failed to destroy session:', err);
             return res.status(500).json({ success: false, message: 'Failed to logout' });
         }
-        res.json({ success: true, message: 'Logged out successfully' });
+        res.clearCookie('connect.sid'); // ลบ session cookie
+        res.redirect('/signin'); // redirect ไปที่หน้า signin
     });
 });
 
 // Routes
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
-app.get('/signin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'signin.html')));
-app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'public', 'signup.html')));
-app.get('/mail', requireLogin, (req, res) => {
+app.get('/', (req, res) => res.send('Server is running'));
+
+app.get('/signin', checkNotLoggedIn, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'signin.html')); // ใช้ path แบบ relative ไปยังโฟลเดอร์ public
+});
+
+app.get('/signup', checkNotLoggedIn, (req, res) => {
+    res.sendFile(path.join(__dirname,'public', 'signup.html'));
+});
+app.get('/mail', checkLoggedIn, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'mail.html'));
 });
 
@@ -250,5 +304,14 @@ app.post('/delete_mail', requireLogin, async (req, res) => {
     }
 });
 
+app.get('/check-session', (req, res) => {
+    if (req.session && req.session.user) {
+        res.json({ loggedIn: true });
+    } else {
+        res.json({ loggedIn: false });
+    }
+});
+
 // Start Server
 app.listen(port, () => console.log(`Server is running on port ${port}`));
+//app.listen(port, () => console.log(`Server is running on http://localhost:${port}`));

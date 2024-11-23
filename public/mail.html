@@ -9,9 +9,9 @@
 <body>
     <!-- Navbar -->
     <nav class="navbar">
-        <a class="navbar-brand" href="index.html">LTCH Project CS436</a>
-        <div class="navbar-nav">
-            <button id="logout-btn" class="btn">Logout</button>
+        <a href="index.html" class="logo">LTCH Project CS436</a>
+        <div class="navbar-buttons">
+            <button id="logout-btn" class="btn btn-secondary">Logout</button>
         </div>
     </nav>
 
@@ -22,7 +22,7 @@
             <ul>
                 <li id="inbox">
                     <img src="image/mail.png" alt="Inbox Icon"> Message Box
-                </li>                
+                </li>
                 <li id="chat">
                     <img src="image/chat.png" alt="Chat Icon"> Chat
                 </li>
@@ -35,31 +35,36 @@
             </ul>
         </div>
 
-        <!-- Container -->
-        <div id="main-content" class="container">
+        <!-- Main Content -->
+        <div id="main-content" class="content-container">
             <img src="image/logo.png" alt="Logo" class="logo" id="initial-logo">
-        </div>              
+        </div>
     </div>
 
     <!-- Add Message Button -->
-<div class="add-button" id="add-message-btn">+</div>
+    <div class="add-button" id="add-message-btn">+</div>
 
-<!-- Popup Form -->
-<div class="popup-form" id="popup-form" style="display: none;">
-    <div class="popup-content">
-        <span class="close-button" id="close-form-btn">&times;</span>
-        <h2>Compose Message</h2>
-        <form id="compose-form">
-            <label for="recipient">To:</label>
-            <input type="text" id="recipient" name="recipient" required />
-            <label for="subject">Subject:</label>
-            <input type="text" id="subject" name="subject" required />
-            <label for="message">Message:</label>
-            <textarea id="message" name="message" rows="5" required></textarea>
-            <button type="submit">Send</button>
-        </form>
+    <!-- Popup Form -->
+    <div class="popup-form" id="popup-form" style="display: none;">
+        <div class="popup-content">
+            <span class="close-button" id="close-form-btn">&times;</span>
+            <h2>Compose Message</h2>
+            <form id="compose-form">
+                <label for="recipient">To:</label>
+                <input type="text" id="recipient" name="recipient" required />
+                <label for="subject">Subject:</label>
+                <input type="text" id="subject" name="subject" required />
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" rows="5" required></textarea>
+                <button type="submit" class="btn btn-primary">Send</button>
+            </form>
+        </div>
     </div>
-</div>
+
+    <div class="frame"></div>
+    <div class="frame"></div>
+    <div class="frame"></div>
+    <div class="frame"></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
@@ -112,14 +117,14 @@
                                 <h2 class="message-box-title">Messages</h2>
                                 <input id="search-input" type="text" placeholder="Search by sender" />
                             </div>
-                            <div id="messages-container">
+                            <div id="messages-container" class="messages-container">
                                 ${messages.map(msg => `
                                     <div class="message-item" onclick='viewMessage(${JSON.stringify(msg)})'>
                                         <div class="message-content">
                                             <h3>${msg.sender || msg.recipient}</h3>
-                                            <p>${msg.subject}</p>
-                                            <p>${msg.message.slice(0, 50)}...</p>
-                                            <small>${new Date(msg.sent_at).toLocaleString()}</small>
+                                            <p class="message-subject">${msg.subject}</p>
+                                            <p class="message-preview">${msg.message.slice(0, 50)}...</p>
+                                            <small class="message-time">${new Date(msg.sent_at).toLocaleString()}</small>
                                         </div>
                                         <button class="delete-button" onclick="deleteMessage(event, ${msg.id})">🗑️</button>
                                     </div>
@@ -154,13 +159,16 @@
             container.innerHTML = `
                 <div class="mail-details">
                     <button onclick="fetchMessages('inbox')" class="back-button">&larr; Back to Inbox</button>
-                    <h2>Mail Details</h2>
-                    <p><strong>From:</strong> ${mail.sender}</p>
-                    <p><strong>To:</strong> ${mail.recipient}</p>
-                    <p><strong>Subject:</strong> ${mail.subject}</p>
-                    <p><strong>Message:</strong></p>
-                    <p style="white-space: pre-wrap;">${mail.message}</p>
-                    <p><strong>Sent At:</strong> ${new Date(mail.sent_at).toLocaleString()}</p>
+                    <div class="mail-content">
+                        <h2 class="mail-title">Mail Details</h2>
+                        <p><strong>From:</strong> ${mail.sender}</p>
+                        <p><strong>To:</strong> ${mail.recipient}</p>
+                        <p><strong>Subject:</strong> ${mail.subject}</p>
+                        <div class="mail-body">
+                            <p style="white-space: pre-wrap;">${mail.message}</p>
+                        </div>
+                        <p class="mail-time"><strong>Sent At:</strong> ${new Date(mail.sent_at).toLocaleString()}</p>
+                    </div>
                 </div>
             `;
         }
