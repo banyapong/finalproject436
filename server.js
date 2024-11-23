@@ -32,15 +32,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Database Configuration
 const dbConfig = {
-    user: 'projectcs436',
-    password: '.cs436team',
-    server: 'prohectcs436database.database.windows.net',
-    database: 'ProjectCS436',
+    user: process.env.DB_USER || 'projectcs436',
+    password: process.env.DB_PASSWORD || '.cs436team',
+    server: process.env.DB_SERVER || 'prohectcs436database.database.windows.net',
+    database: process.env.DB_NAME || 'ProjectCS436',
     options: {
         encrypt: true,
         trustServerCertificate: true
     }
 };
+
 
 // Connect to Database
 mssql.connect(dbConfig)
