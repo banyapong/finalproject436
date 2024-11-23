@@ -49,15 +49,6 @@ app.use(
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// การตั้งค่า Session
-app.use(session({
-    store: new RedisStore({ client: redisClient }),
-    secret: 'your-secret-key',
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false, httpOnly: true, maxAge: 24 * 60 * 60 * 1000 } // 1 วัน
-}));
-
 // Static Files
 app.use(express.static(path.join(__dirname, 'public')));
 
