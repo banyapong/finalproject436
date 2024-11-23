@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 const session = require('express-session');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000; // ปรับพอร์ตให้รองรับ environment variables
 
 // การตั้งค่า Body Parser
 app.use(bodyParser.json());
@@ -38,10 +38,22 @@ const dbConfig = {
     database: process.env.DB_NAME || 'ProjectCS436',
     options: {
         encrypt: true,
-        trustServerCertificate: true
-    }
+        trustServerCertificate: true,
+        requestTimeout: 30000, // เพิ่ม requestTimeout เพื่อป้องกันการ timeout เร็วเกินไป
+    },
 };
 
+// Function to Connect to Database with Retry Logic
+const connectWithRetry = async () => {
+    try {
+        await mssql.connect(dbConfig);
+        console.log('Connected to SQL Server');
+    } catch (err) {
+        console.error('SQL Server connection failed. Retrying in 5 seconds...', err);
+        setTimeout(connectWithRetry, 5000); // Retry after 5 seconds
+    }
+};
+connectWithRetry(); // เรียกใช้การเชื่อมต่อฐานข้อมูลพร้อม Retry Logic
 
 // Connect to Database
 mssql.connect(dbConfig)
@@ -239,4 +251,4 @@ app.post('/delete_mail', requireLogin, async (req, res) => {
 });
 
 // Start Server
-app.listen(port, () => console.log(`Server is running on http://localhost:${port}`));
+app.listen(port, () => console.log(`Server is running on port ${port}`));
