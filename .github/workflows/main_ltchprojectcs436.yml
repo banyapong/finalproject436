@@ -25,10 +25,10 @@ jobs:
         run: npm run build # ตรวจสอบว่า scripts "build" มีใน package.json
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4 # ใช้ version ล่าสุดของ upload-artifact
         with:
           name: node-app
-          path: . # หรือโฟลเดอร์ที่ต้องการอัปโหลด (เช่น build/ หรือ release.zip)
+          path: . # หรือระบุโฟลเดอร์หรือไฟล์ที่ต้องการ เช่น build/ หรือ release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -40,14 +40,17 @@ jobs:
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4 # ใช้ version ล่าสุดของ download-artifact
         with:
           name: node-app
+
+      - name: Debug - List files
+        run: ls -la # คำสั่งนี้ช่วยตรวจสอบว่าไฟล์ถูกดาวน์โหลดมาถูกต้องหรือไม่
 
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_6F4EE75A026E41119AAC3D128EA2B5A2 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_6F4EE75A026E41119AAC3D128EA2B5A2 }} # ใช้ชื่อ Secrets ที่เหมาะสม
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_32FD17E3DAF3410FB93B3DD0DEE2A88E }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_86CCCBE9E6A94B75A0624917C66AB444 }}
 
@@ -56,4 +59,4 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'LTCHProjectcs436'
-          package: .
+          package: . # หรือเปลี่ยนเป็นชื่อไฟล์/โฟลเดอร์ที่เหมาะสม เช่น release.zip
