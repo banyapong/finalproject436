@@ -12,7 +12,11 @@ const port = process.env.PORT || 3000;
 
 // สร้าง Redis client
 const redisClient = createClient({
-    url: process.env.REDIS_URL, // Non-SSL URL
+    url: process.env.REDIS_URL,
+    socket: {
+        tls: true, // ใช้ TLS/SSL
+        rejectUnauthorized: false, // หาก Certificate ไม่สมบูรณ์
+    },
 });
 
 redisClient.on('error', (err) => console.error('Redis Client Error:', err));
@@ -25,8 +29,6 @@ redisClient.on('error', (err) => console.error('Redis Client Error:', err));
         console.error('Failed to connect to Redis:', err);
     }
 })();
-
-redisClient.on('error', (err) => console.error('Redis Client Error:', err));
 
 // ตั้งค่า session ด้วย RedisStore
 app.use(
