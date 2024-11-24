@@ -4,61 +4,13 @@ const mssql = require('mssql');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
-const RedisStore = require('connect-redis').default; // ใช้ .default สำหรับการสร้าง store
-const { createClient } = require('redis'); // ใช้ createClient จาก redis
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// สร้าง Redis client
-
-const redisClient = createClient({
-    url: process.env.REDIS_URL, // ตัวแปร REDIS_URL ที่ตั้งค่าใน environment
-    socket: {
-        tls: true, // กำหนดให้ใช้ TLS (SSL)
-        rejectUnauthorized: false, // อนุญาต Certificate ที่ไม่ถูกต้อง (สำหรับ Development)
-    },
-});
-
-redisClient.on('error', (err) => console.error('Redis Client Error:', err));
-
-(async () => {
-    try {
-        await redisClient.connect();
-        console.log('Connected to Redis');
-
-        // ทดสอบเขียนค่า
-        await redisClient.set('test_key', 'test_value');
-        const value = await redisClient.get('test_key');
-        console.log('Test Value:', value);
-
-    } catch (err) {
-        console.error('Failed to connect to Redis:', err);
-    } finally {
-        redisClient.disconnect();
-    }
-})();
-
-redisClient.ping((err, res) => {
-    if (err) {
-        console.error('Ping Error:', err);
-    } else {
-        console.log('Redis Ping Response:', res);
-    }
-});
-
-redisClient.on('connect', () => {
-    console.log('Redis client connected successfully');
-});
-
-redisClient.on('error', (err) => {
-    console.error('Redis connection error:', err);
-});
-
-// ตั้งค่า session ด้วย RedisStore
+// ตั้งค่า session โดยใช้ default memory store ของ express-session
 app.use(
     session({
-        store: new RedisStore({ client: redisClient }), // กำหนด client สำหรับ RedisStore
         secret: 'your-secret-key', // กำหนด secret key สำหรับ session
         resave: false,
         saveUninitialized: false,
