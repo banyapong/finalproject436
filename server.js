@@ -12,11 +12,10 @@ const port = process.env.PORT || 3000;
 
 // สร้าง Redis client
 const redisClient = createClient({
-    url: process.env.REDIS_URL, // ใช้ Environment Variable สำหรับ Redis URL
+    url: process.env.REDIS_URL, // Non-SSL URL
 });
 
-// เชื่อมต่อ Redis client
-redisClient.on('error', (err) => console.error('Redis Client Error', err));
+redisClient.on('error', (err) => console.error('Redis Client Error:', err));
 
 (async () => {
     try {
@@ -26,6 +25,8 @@ redisClient.on('error', (err) => console.error('Redis Client Error', err));
         console.error('Failed to connect to Redis:', err);
     }
 })();
+
+redisClient.on('error', (err) => console.error('Redis Client Error:', err));
 
 // ตั้งค่า session ด้วย RedisStore
 app.use(
@@ -109,6 +110,16 @@ app.get('/check_session', (req, res) => {
         res.json({ success: true, user: req.session.user });
     } else {
         res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+});
+
+app.get('/health', async (req, res) => {
+    try {
+        const pool = await mssql.connect(dbConfig);
+        res.status(200).send('Server is healthy');
+        pool.close();
+    } catch (err) {
+        res.status(500).send('Database connection failed');
     }
 });
 
