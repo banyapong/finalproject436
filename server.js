@@ -53,7 +53,6 @@ const connectWithRetry = async () => {
     }
 };
 connectWithRetry(); // เรียกใช้การเชื่อมต่อฐานข้อมูลพร้อม Retry Logic
-
 // Connect to Database
 mssql.connect(dbConfig)
     .then(() => console.log("Connected to SQL Server"))
@@ -66,7 +65,6 @@ const checkNotLoggedIn = (req, res, next) => {
     }
     next();
 };
-
 const checkLoggedIn = (req, res, next) => {
     if (!req.session || !req.session.user) {
         // หากไม่ได้ล็อกอิน ให้ Redirect ไปหน้า Signin
