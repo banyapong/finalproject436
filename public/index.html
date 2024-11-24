@@ -39,12 +39,12 @@
     <script>
         // check-session.js
         fetch('/check-session')
-          .then(response => response.json())
-          .then(data => {
-              if (data.loggedIn) {
-                  window.location.href = '/mail';
-              }
-          });
+            .then(response => response.json())
+            .then(data => {
+                if (data.loggedIn) {
+                    window.location.href = '/mail';
+                }
+            });
 
     </script>
 

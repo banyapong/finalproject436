@@ -12,10 +12,7 @@ const port = process.env.PORT || 3000;
 
 // สร้าง Redis client
 const redisClient = createClient({
-    socket: {
-        host: '127.0.0.1',
-        port: 6379,
-    },
+    url: process.env.REDIS_URL, // ใช้ Environment Variable สำหรับ Redis URL
 });
 
 // เชื่อมต่อ Redis client
