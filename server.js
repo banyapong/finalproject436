@@ -46,12 +46,12 @@ const dbConfig = {
 const connectWithRetry = async () => {
     try {
         await mssql.connect(dbConfig);
-        console.log('Connected to SQL Server');
     } catch (err) {
         console.error('SQL Server connection failed. Retrying in 5 seconds...', err);
         setTimeout(connectWithRetry, 5000); // Retry after 5 seconds
     }
 };
+
 connectWithRetry(); // เรียกใช้การเชื่อมต่อฐานข้อมูลพร้อม Retry Logic
 // Connect to Database
 mssql.connect(dbConfig)
@@ -122,6 +122,7 @@ app.get('/signin', checkNotLoggedIn, (req, res) => {
 app.get('/signup', checkNotLoggedIn, (req, res) => {
     res.sendFile(path.join(__dirname,'public', 'signup.html'));
 });
+
 app.get('/mail', checkLoggedIn, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'mail.html'));
 });
@@ -197,14 +198,14 @@ app.get('/fetch_message', requireLogin, async (req, res) => {
 
         if (mode === 'inbox') {
             query = `
-                SELECT id, sender, subject, message, sent_at
+                SELECT id, sender, recipient, subject, message, sent_at
                 FROM dbo.mails
                 WHERE recipient = @userEmail
                 ORDER BY sent_at DESC
             `;
         } else if (mode === 'sent') {
             query = `
-                SELECT id, recipient, subject, message, sent_at
+                SELECT id, sender, recipient, subject, message, sent_at
                 FROM dbo.mails
                 WHERE sender = @userEmail
                 ORDER BY sent_at DESC
@@ -213,6 +214,9 @@ app.get('/fetch_message', requireLogin, async (req, res) => {
 
         request.input('userEmail', mssql.NVarChar, email);
         const result = await request.query(query);
+
+        // Log ข้อมูลที่ถูกส่งกลับไปยัง Client
+        console.log('Result from DB:', result.recordset);
 
         res.json(result.recordset);
     } catch (err) {
@@ -225,6 +229,7 @@ app.post('/send_email', requireLogin, async (req, res) => {
     const { recipient, subject, message } = req.body;
     const sender = req.session.user?.email;
 
+    // ตรวจสอบค่าที่จำเป็น
     if (!sender || !recipient || !message) {
         return res.status(400).json({ success: false, message: 'Sender, recipient, and message are required' });
     }
@@ -236,7 +241,7 @@ app.post('/send_email', requireLogin, async (req, res) => {
     try {
         const request = new mssql.Request();
 
-        // ตรวจสอบว่าผู้รับมีอยู่ในระบบหรือไม่
+        // ตรวจสอบผู้รับว่ามีอยู่ในระบบ
         request.input('recipient', mssql.NVarChar, recipient);
         const checkRecipient = await request.query('SELECT email FROM users WHERE email = @recipient');
 

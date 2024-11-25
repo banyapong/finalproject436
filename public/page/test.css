@@ -5,6 +5,12 @@
     box-sizing: border-box;
 }
 
+/* แก้ไขการเลื่อนหน้าจอ */
+body, html {
+    overflow-y: auto; /* เปิดใช้งานการเลื่อน */
+    height: auto; /* ปรับความสูงให้อัตโนมัติ */
+}
+
 body {
     font-family: 'Arial', sans-serif;
     background: linear-gradient(-45deg, #D1C4E9, #E8DFFF, #C37B4E, #F5E3D9);
@@ -18,6 +24,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding-top: 80px; /* เพิ่ม Padding ตามความสูงของ Navbar */
 }
 
 /* Overlay for Page Transition */
@@ -39,22 +46,27 @@ body {
     pointer-events: all;
 }
 
+/* ซ่อนปุ่ม Hamburger Menu บนหน้าจอใหญ่ */
+.menu-toggle {
+    display: none; /* ซ่อนปุ่ม */
+}
+
 /* Navbar */
 .navbar {
-    width: 90%;
-    max-width: 1200px;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 15px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 10;
+    position: fixed; /* ติด Navbar ไว้ที่ด้านบน */
+    top: 20px; /* ระยะห่างจากด้านบน */
+    left: 50%; /* ระยะห่างจากด้านซ้าย 50% */
+    transform: translateX(-50%); /* ย้ายกลับครึ่งหนึ่งของความกว้างเพื่อให้อยู่ตรงกลาง */
+    width: 90%; /* ความกว้างเต็ม 90% ของหน้าจอ */
+    max-width: 1200px; /* จำกัดความกว้างสูงสุด */
+    background: rgba(255, 255, 255, 0.9); /* พื้นหลังโปร่งแสง */
+    padding: 15px 20px; /* เพิ่ม Padding ภายใน */
+    display: flex; /* ใช้ Flexbox */
+    justify-content: space-between; /* จัดวางไอเท็มซ้าย-ขวา */
+    align-items: center; /* จัดแนวไอเท็มให้อยู่ตรงกลาง */
+    z-index: 1000; /* ทำให้ Navbar อยู่เหนือองค์ประกอบอื่น */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* เพิ่มเงา */
+    border-radius: 10px; /* มุมโค้ง */
 }
 
 .navbar .nav-link {
@@ -65,27 +77,28 @@ body {
     transition: color 0.3s ease-in-out;
 }
 
+/* ซ่อนเมนูด้วยการตั้งค่าตำแหน่ง */
+.navbar .navbar-nav {
+    max-height: 0; /* เริ่มต้นซ่อนเมนู */
+    overflow: hidden; /* ซ่อนเนื้อหาส่วนเกิน */
+    flex-direction: column; /* จัดเรียงในแนวตั้ง */
+    gap: 10px; /* ระยะห่างระหว่างลิงก์ */
+    transition: max-height 0.3s ease-in-out; /* Animation เลื่อน */
+}
+
+/* แสดงเมนูเมื่อ active */
+.navbar .navbar-nav.active {
+    max-height: 200px; /* ขยายเมนู (ปรับตามจำนวนเมนู) */
+}
+
+/* ปุ่ม Hamburger */
+.menu-toggle {
+    display: none; /* แสดงปุ่ม Hamburger */
+}
+
+
 .navbar .nav-link:hover {
     color: #37006b;
-}
-
-/* Main Content */
-#content {
-    text-align: center;
-    margin-top: 100px;
-    animation: fade-in 1s ease-in-out;
-}
-
-/* Animation for fade-in content */
-@keyframes fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 .navbar .navbar-brand {
@@ -128,16 +141,22 @@ body {
     color: white;
 }
 
-/* Animation Frames */
-@keyframes gradient-shift {
-    0% {
-        background-position: 0% 50%;
+/* Main Content */
+#content {
+    text-align: center;
+    margin-top: 100px;
+    animation: fade-in 1s ease-in-out;
+}
+
+/* Animation for fade-in content */
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
     }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
@@ -261,4 +280,90 @@ body {
 #overlay.active {
     transform: translateX(100%);
     transition: transform 0.8s ease;
+}
+
+/* สำหรับหน้าจอที่เล็กกว่า 768px */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column; /* จัด Navbar เป็นคอลัมน์ */
+        align-items: center; /* จัดตำแหน่งให้อยู่ตรงกลาง */
+        padding: 20px 10px; /* เพิ่ม Padding ด้านใน */
+        text-align: center; /* จัดให้อยู่ตรงกลาง */
+    }
+
+    .navbar-brand {
+        margin-bottom: 15px; /* ระยะห่างระหว่างโลโก้และเมนู */
+        font-size: 1.5rem; /* ลดขนาดฟอนต์ */
+        text-align: center;
+    }
+
+    .menu-toggle {
+        display: block; /* แสดงปุ่ม Hamburger */
+        margin-bottom: 15px; /* ระยะห่างระหว่างปุ่ม Hamburger กับเมนู */
+        background: none;
+        border: none;
+        font-size: 1.8rem; /* ขนาดปุ่ม Hamburger */
+        color: #4B0082; /* สีของปุ่ม */
+        cursor: pointer;
+    }
+
+    .navbar-nav {
+        display: none; /* ซ่อนเมนูเริ่มต้น */
+        flex-direction: column; /* จัดเรียงเมนูในแนวตั้ง */
+        gap: 10px; /* เพิ่มระยะห่างระหว่างปุ่ม */
+        width: 100%; /* ให้เมนูเต็มความกว้าง */
+        max-width: 300px; /* จำกัดความกว้างสูงสุด */
+        text-align: center;
+        padding: 15px 0; /* เพิ่ม Padding บน-ล่าง */
+        background: rgba(255, 255, 255, 0.95); /* พื้นหลัง */
+        border-radius: 10px; /* มุมโค้ง */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* เพิ่มเงา */
+        transition: max-height 0.3s ease-in-out; /* Animation */
+        max-height: 0; /* ซ่อนเมนู */
+        overflow: hidden; /* ซ่อนเนื้อหาที่เกิน */
+    }
+
+    .navbar-nav.active {
+        display: flex; /* แสดงเมนูเมื่อ active */
+        max-height: 200px; /* ความสูงเมนู */
+    }
+
+    .navbar-nav .btn {
+        width: 90%; /* ปุ่มเต็มความกว้าง */
+        margin: 0 auto; /* จัดให้อยู่กึ่งกลาง */
+        padding: 15px; /* เพิ่ม Padding */
+        font-size: 1rem; /* ขนาดตัวอักษร */
+        font-weight: bold; /* ตัวหนา */
+        text-align: center; /* จัดข้อความให้อยู่ตรงกลาง */
+        border-radius: 5px; /* มุมโค้ง */
+    }
+
+    .navbar-nav .btn-primary {
+        background-color: #4B0082; /* สีพื้นหลัง */
+        color: #fff; /* สีตัวอักษร */
+        border: none; /* ไม่มีเส้นขอบ */
+    }
+
+    .navbar-nav .btn-primary:hover {
+        background-color: #37006B; /* สีพื้นหลังเมื่อ Hover */
+    }
+
+    .navbar-nav .btn-secondary {
+        background-color: #fff; /* สีพื้นหลัง */
+        color: #4B0082; /* สีตัวอักษร */
+        border: 2px solid #4B0082; /* เส้นขอบ */
+    }
+
+    .navbar-nav .btn-secondary:hover {
+        background-color: #4B0082; /* สีพื้นหลังเมื่อ Hover */
+        color: #fff; /* สีตัวอักษรเมื่อ Hover */
+    }
+}
+
+@media (min-width: 769px) {
+    .navbar .navbar-nav {
+        max-height: none; /* รีเซ็ตค่าความสูง */
+        display: flex; /* แสดงเป็นแถว */
+        flex-direction: row; /* แนวนอน */
+    }
 }

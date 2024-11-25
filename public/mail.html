@@ -9,7 +9,7 @@
 <body>
     <!-- Navbar -->
     <nav class="navbar">
-        <a href="index.html" class="logo">LTCH Project CS436</a>
+        <a href="" class="logo">LTCH Project CS436</a>
         <div class="navbar-buttons">
             <button id="logout-btn" class="btn btn-secondary">Logout</button>
         </div>
@@ -23,8 +23,8 @@
                 <li id="inbox">
                     <img src="image/mail.png" alt="Inbox Icon"> Message Box
                 </li>
-                <li id="chat">
-                    <img src="image/chat.png" alt="Chat Icon"> Chat
+                <li id="sent">
+                    <img src="image/chat.png" alt="Sent Icon"> Sent
                 </li>
                 <li id="document">
                     <img src="image/file.png" alt="Document Icon"> Document
@@ -83,6 +83,11 @@
                 console.log("Inbox clicked"); // ตรวจสอบว่า event ถูกเรียก
                 fetchMessages('inbox');
             });
+
+            document.getElementById('sent').addEventListener('click', () => {
+                console.log("Sent clicked"); // ตรวจสอบว่า event ถูกเรียก
+                fetchMessages('sent');
+            });
         });
 
         document.getElementById('logout-btn').addEventListener('click', async () => {
@@ -99,8 +104,11 @@
             }
         });
 
+        let currentMode = 'inbox'; // เก็บสถานะโหมดเริ่มต้นเป็น Inbox
+
         async function fetchMessages(mode = 'inbox') {
             try {
+                currentMode = mode; // อัปเดตสถานะโหมด
                 const response = await fetch(`/fetch_message?mode=${mode}`);
                 const messages = await response.json();
 
@@ -108,22 +116,22 @@
                 const logo = document.getElementById('initial-logo');
 
                 if (messages.length > 0) {
-                    if (logo) logo.style.display = 'none'; // ซ่อนโลโก้
-                    container.classList.add('active-content'); // จัดตำแหน่งให้อยู่ด้านบน
+                    if (logo) logo.style.display = 'none';
+                    container.classList.add('active-content');
 
                     container.innerHTML = `
                         <div class="message-box">
                             <div class="message-box-header">
-                                <h2 class="message-box-title">Messages</h2>
-                                <input id="search-input" type="text" placeholder="Search by sender" />
+                                <h2 class="message-box-title">${mode === 'inbox' ? 'Inbox Messages' : 'Sent Messages'}</h2>
+                                <input id="search-input" type="text" placeholder="Search by ${mode === 'inbox' ? 'sender' : 'recipient'}" />
                             </div>
                             <div id="messages-container" class="messages-container">
                                 ${messages.map(msg => `
                                     <div class="message-item" onclick='viewMessage(${JSON.stringify(msg)})'>
                                         <div class="message-content">
-                                            <h3>${msg.sender || msg.recipient}</h3>
-                                            <p class="message-subject">${msg.subject}</p>
-                                            <p class="message-preview">${msg.message.slice(0, 50)}...</p>
+                                            <h3>${mode === 'inbox' ? (msg.sender || 'Unknown Sender') : (msg.recipient || 'Unknown Recipient')}</h3>
+                                            <p class="message-subject">${msg.subject || 'No Subject'}</p>
+                                            <p class="message-preview">${msg.message.slice(0, 50) || 'No Content'}...</p>
                                             <small class="message-time">${new Date(msg.sent_at).toLocaleString()}</small>
                                         </div>
                                         <button class="delete-button" onclick="deleteMessage(event, ${msg.id})">🗑️</button>
@@ -132,21 +140,13 @@
                             </div>
                         </div>
                     `;
-
-                    enableSearch();
                 } else {
-                    if (logo) logo.style.display = 'block'; // แสดงโลโก้เมื่อไม่มีข้อมูล
-                    container.classList.remove('active-content'); // จัดตำแหน่งกลับไปตรงกลาง
-
-                    container.innerHTML = `<p style="text-align: center; margin-top: 20px;">No messages found.</p>`;
+                    if (logo) logo.style.display = 'block';
+                    container.classList.remove('active-content');
+                    container.innerHTML = `<p style="text-align: center; margin-top: 20px;">No ${mode === 'inbox' ? 'received' : 'sent'} messages found.</p>`;
                 }
             } catch (error) {
                 console.error('Error fetching messages:', error);
-                const container = document.getElementById('main-content');
-                const logo = document.getElementById('initial-logo');
-                if (logo) logo.style.display = 'none';
-
-                container.classList.remove('active-content');
                 container.innerHTML = `<p style="text-align: center; margin-top: 20px;">Error fetching messages.</p>`;
             }
         }
@@ -158,14 +158,14 @@
 
             container.innerHTML = `
                 <div class="mail-details">
-                    <button onclick="fetchMessages('inbox')" class="back-button">&larr; Back to Inbox</button>
+                    <button onclick="fetchMessages(currentMode)" class="back-button">&larr; Back to ${currentMode === 'inbox' ? 'Inbox' : 'Sent'}</button>
                     <div class="mail-content">
                         <h2 class="mail-title">Mail Details</h2>
-                        <p><strong>From:</strong> ${mail.sender}</p>
-                        <p><strong>To:</strong> ${mail.recipient}</p>
-                        <p><strong>Subject:</strong> ${mail.subject}</p>
+                        <p><strong>From:</strong> ${mail.sender || 'Unknown Sender'}</p>
+                        <p><strong>To:</strong> ${mail.recipient || 'Unknown Recipient'}</p>
+                        <p><strong>Subject:</strong> ${mail.subject || 'No Subject'}</p>
                         <div class="mail-body">
-                            <p style="white-space: pre-wrap;">${mail.message}</p>
+                            <p style="white-space: pre-wrap;">${mail.message || 'No Content'}</p>
                         </div>
                         <p class="mail-time"><strong>Sent At:</strong> ${new Date(mail.sent_at).toLocaleString()}</p>
                     </div>
@@ -225,8 +225,13 @@
                 const result = await response.json();
                 if (result.success) {
                     alert(result.message);
+
+                    // ซ่อนฟอร์มการส่งเมล
                     document.getElementById('popup-form').style.display = 'none';
-                    fetchMessages('inbox');
+
+                    // ล้างข้อมูลในฟอร์ม
+                    document.getElementById('compose-form').reset();
+
                 } else {
                     alert(result.message);
                 }

@@ -9,10 +9,11 @@
 <body>
     <!-- Navbar -->
     <nav class="navbar">
-        <a class="navbar-brand" href="#">LTCH Project CS436</a>
-        <div class="navbar-nav">
-            <a href="signin.html" class="btn btn-primary nav-link" id="signin-link">Sign In</a>
-            <a href="signup.html" class="btn btn-secondary nav-link" id="signup-link">Sign Up</a>
+        <a class="navbar-brand" href="index.html">LTCH Project CS436</a>
+        <button class="menu-toggle" id="menu-toggle">☰</button>
+        <div class="navbar-nav" id="navbar-nav">
+            <a href="signin.html" class="btn btn-primary nav-link">Sign In</a>
+            <a href="signup.html" class="btn btn-secondary nav-link">Sign Up</a>
         </div>
     </nav>
 
@@ -45,6 +46,32 @@
                     window.location.href = '/mail';
                 }
             });
+
+        document.getElementById('menu-toggle').addEventListener('click', function () {
+            const nav = document.getElementById('navbar-nav');
+
+            // Toggle active class
+            if (nav.classList.contains('active')) {
+                nav.style.maxHeight = '0'; // ซ่อนเมนู
+                nav.classList.remove('active');
+            } else {
+                nav.style.maxHeight = '200px'; // แสดงเมนู
+                nav.classList.add('active');
+            }
+        });
+
+        window.addEventListener('resize', function () {
+            const nav = document.getElementById('navbar-nav');
+
+            if (window.innerWidth > 768) {
+                // รีเซ็ตค่า max-height สำหรับหน้าจอใหญ่
+                nav.classList.remove('active');
+                nav.style.maxHeight = 'none';
+            } else {
+                // คืนค่า max-height สำหรับหน้าจอเล็ก
+                nav.style.maxHeight = '0';
+            }
+        });
 
     </script>
 
