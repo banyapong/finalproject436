@@ -335,7 +335,7 @@
                 console.log("File Picker clicked.");
             });
 
-            profileUploadInput.addEventListener("change", async (e) => {
+            profileImageInput.addEventListener("change", async (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
 
@@ -350,11 +350,16 @@
 
                     const result = await response.json();
                     if (result.success) {
-                        alert("Profile image updated successfully!");
+                        alert("Profile picture updated successfully!");
+
+                        // อัปเดตรูปภาพโปรไฟล์ใน navbar และ dropdown
                         document.getElementById("navbar-profile-image").src = result.url;
                         document.getElementById("dropdown-profile-image").src = result.url;
+
+                        // Refresh เนื้อหาโปรไฟล์
+                        document.getElementById("manage-account-btn").click(); // Load profile details again
                     } else {
-                        alert("Failed to update profile image.");
+                        alert("Failed to update profile picture.");
                     }
                 } catch (err) {
                     console.error("Error during profile upload:", err);
@@ -496,6 +501,8 @@
                     // ล้างข้อมูลในฟอร์ม
                     document.getElementById('compose-form').reset();
 
+                    // Refresh ข้อมูลกล่องข้อความ
+                    fetchMessages(currentMode); // Refresh inbox or sent messages
                 } else {
                     alert(result.message);
                 }

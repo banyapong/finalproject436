@@ -11,9 +11,21 @@ const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STR
 const app = express();
 const port = process.env.PORT || 8080;
 
+let blobServiceClient; // Define globally
+let containerClient;  // Define globally
+
 // Azure Blob Storage Configuration
-const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
-const containerClient = blobServiceClient.getContainerClient("profile-images");
+try {
+    if (!AZURE_STORAGE_CONNECTION_STRING) {
+        throw new Error("AZURE_STORAGE_CONNECTION_STRING is not set.");
+    }
+
+    blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
+    containerClient = blobServiceClient.getContainerClient("profile-images");
+    console.log("Azure Blob Storage connected successfully.");
+} catch (error) {
+    console.error("Error initializing BlobServiceClient:", error.message);
+}
 
 // ตั้งค่า session โดยใช้ default memory store ของ express-session
 app.use(
@@ -169,7 +181,10 @@ app.get('/logout', (req, res) => {
 });
 
 // Routes
-app.get('/', (req, res) => res.send('Server is running'));
+app.get('/', (req, res) => {
+    res.send('Server is running');
+    res.send('Azure Blob Storage setup completed.');
+});
 
 app.get('/signin', checkNotLoggedIn, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'signin.html')); // ใช้ path แบบ relative ไปยังโฟลเดอร์ public
