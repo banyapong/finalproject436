@@ -6,7 +6,6 @@ const bcrypt = require('bcryptjs');
 const session = require('express-session');
 const multer = require('multer');
 const { BlobServiceClient } = require('@azure/storage-blob');
-require('dotenv').config();
 
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
 const app = express();
