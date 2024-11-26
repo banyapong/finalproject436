@@ -5,6 +5,11 @@
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth; /* เปิดใช้งานการเลื่อนแบบนุ่มนวล */
+}
+
+
 /* แก้ไขการเลื่อนหน้าจอ */
 body, html {
     overflow-y: auto; /* เปิดใช้งานการเลื่อน */

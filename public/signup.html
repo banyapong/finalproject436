@@ -46,6 +46,24 @@
                 <input type="text" id="lastName" name="lastName" placeholder="Enter your last name" required>
             </div>
 
+            <div class="form-group">
+                <label for="profileImage">Profile Image</label>
+                <input type="file" id="profileImage" name="profileImage" accept="image/*">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input
+                    type="text"
+                    id="phone"
+                    name="phone"
+                    placeholder="Enter your phone number"
+                    required
+                    pattern="[0-9]{10}"
+                    title="Phone number must be exactly 10 digits"
+                >
+            </div>            
+
             <!-- Buttons for 'Go Back' and 'Sign Up' -->
             <div class="form-buttons">
                 <a href="index.html" class="btn btn-secondary">Go Back</a>
@@ -79,38 +97,79 @@
         });
 
         document.getElementById('signup-form').addEventListener('submit', async (e) => {
-            e.preventDefault();  // ป้องกันการรีเฟรชหน้าเมื่อส่งฟอร์ม
+            e.preventDefault();
 
             const email = document.getElementById('email').value;
-            const username = document.getElementById('username').value;
+            const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
-            const firstName = document.getElementById('firstName').value;
-            const lastName = document.getElementById('lastName').value;
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+
+            // Validation
+            const usernameRegex = /^\S+$/; // No whitespace allowed
+            const nameRegex = /^[a-zA-Z]+$/; // Letters only
+            const phoneRegex = /^[0-9]{10}$/; // 10-digit numbers only
+
+            if (!usernameRegex.test(username)) {
+                alert('Username cannot contain spaces.');
+                return;
+            }
+
+            if (!nameRegex.test(firstName)) {
+                alert('First Name can only contain letters.');
+                return;
+            }
+
+            if (!nameRegex.test(lastName)) {
+                alert('Last Name can only contain letters.');
+                return;
+            }
+
+            if (!phoneRegex.test(phone)) {
+                alert('Phone number must be exactly 10 digits.');
+                return;
+            }
 
             if (password !== confirmPassword) {
-                alert('Passwords do not match!');
+                alert('Passwords do not match.');
                 return;
+            }
+
+            const formData = new FormData();
+            formData.append('email', email);
+            formData.append('username', username);
+            formData.append('password', password);
+            formData.append('confirmPassword', confirmPassword);
+            formData.append('firstName', firstName);
+            formData.append('lastName', lastName);
+            formData.append('phone', phone);
+
+            const profileImage = document.getElementById('profileImage').files[0];
+            if (profileImage) {
+                formData.append('profileImage', profileImage);
             }
 
             try {
                 const response = await fetch('/signup', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, username, password, firstName, lastName })  // ส่งข้อมูลในรูปแบบ JSON
+                    body: formData,
                 });
 
-                const data = await response.json();
-                if (data.success) {
-                    window.location.href = '/signin';  // หากลงทะเบียนสำเร็จให้ไปที่หน้า signin
+                const result = await response.json();
+                if (result.success) {
+                    alert('Registration successful!');
+                    window.location.href = '/signin';
                 } else {
-                    alert(data.message);  // หากไม่สำเร็จจะแสดงข้อความ
+                    alert(result.message);
                 }
-            } catch (error) {
-                alert('Error during sign up');
+            } catch (err) {
+                console.error('Error during registration:', err);
+                alert('An error occurred during registration. Please try again.');
             }
         });
-    
+
         window.addEventListener('resize', function () {
             const nav = document.getElementById('navbar-nav');
 

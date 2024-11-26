@@ -6,6 +6,17 @@
     font-family: Arial, sans-serif;
 }
 
+html {
+    scroll-behavior: smooth; /* เปิดใช้งานการเลื่อนแบบนุ่มนวล */
+}
+
+/* แก้ไขการเลื่อนหน้าจอ */
+body, html {
+    overflow-y: auto; /* เปิดใช้งานการเลื่อน */
+    height: auto; /* ปรับความสูงให้อัตโนมัติ */
+}
+
+
 /* Body */
 body {
     background: linear-gradient(-45deg, #D1C4E9, #E8DFFF, #C37B4E, #F5E3D9);
@@ -206,48 +217,102 @@ body {
 
 /* Sidebar */
 .sidebar {
-    width: 25%; /* กำหนดความกว้าง 25% */
-    max-width: 300px; /* ความกว้างสูงสุด */
-    background-color: #ffffff; /* สีพื้นหลังสีขาว */
+    width: 100%; /* ใช้เต็มความกว้างสำหรับหน้าจอแคบ */
+    max-width: 300px; /* กำหนดความกว้างสูงสุด */
+    background-color: #ffffff; /* สีพื้นหลัง */
     border-radius: 15px; /* มุมโค้ง */
-    padding: 15px; /* ระยะห่างภายใน */
+    padding: 20px; /* ระยะห่างภายในเพิ่มขึ้น */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* เพิ่มเงา */
     display: flex; /* ใช้ Flexbox */
     flex-direction: column; /* จัดเรียงในแนวตั้ง */
-    align-items: flex-start; /* ข้อมูลใน Sidebar ชิดซ้าย */
-    height: auto; /* ปรับความสูงให้เป็นไปตามเนื้อหา */
-    min-height: 200px; /* กำหนดความสูงขั้นต่ำ */
-    position: relative; /* แยกการจัดตำแหน่งจาก Container */
+    align-items: center; /* จัดเนื้อหาไว้กลาง */
+    height: auto; /* ความสูงปรับตามเนื้อหา */
+    margin: 0 auto; /* จัดให้อยู่กลางหน้าจอ */
 }
 
+/* รายการใน Sidebar */
 .sidebar ul {
-    list-style: none;
-    width: 100%;
+    width: 100%; /* ให้ ul ใช้เต็มความกว้างของ Sidebar */
+    display: flex;
+    flex-direction: column; /* จัดเรียงในแนวตั้ง */
+    align-items: center; /* จัดให้อยู่ตรงกลาง */
+    padding: 0;
+    margin: 0;
+    list-style: none; /* ลบ Bullet Point */
+    
 }
 
 .sidebar ul li {
-    display: flex;
+    width: 95%; /* ความกว้างของรายการแต่ละอัน */
+    text-align: center; /* จัดข้อความให้อยู่ตรงกลาง */
+    display: flex; /* ใช้ Flexbox */
+    flex-direction: column; /* ไอคอนและข้อความเรียงในแนวตั้ง */
     align-items: center;
-    padding: 10px;
+    padding: 15px; /* ระยะห่างภายใน */
     font-size: 1rem;
     color: #4B0082;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
-    transition: background-color 0.3s ease;
     background-color: #f9f9f9;
     border-radius: 10px;
-    margin-bottom: 10px;
+    margin: 10px 0; /* ระยะห่างระหว่างรายการ */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* เพิ่ม Shadow */
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+/* Highlight Active Sidebar Item */
+.sidebar ul li.active {
+    background-color: #e0e0ff; /* พื้นหลังแตกต่างสำหรับหัวข้อที่เลือก */
+    color: #4B0082; /* สีข้อความ */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05); /* ขยายเล็กน้อย */
+    font-weight: bold;
+}
+
+.sidebar ul li.clicked {
+    animation: bounce 0.3s ease-in-out; /* Animation Bounce เมื่อคลิก */
+}
+
+/* Animation on Sidebar Item Click */
+@keyframes bounce {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 .sidebar ul li:hover {
-    background-color: #f3e5ff;
-    border-radius: 8px;
+    background-color: #E8E8FF;
+    transform: scale(1.05);
 }
 
 .sidebar ul li img {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
+    display: block; /* แสดงไอคอน */
+    margin-bottom: 10px; /* ระยะห่างระหว่างไอคอนและข้อความ */
+    width: 30px; /* ขนาดของไอคอน */
+    height: auto;
+}
+
+.sidebar ul li span {
+    font-weight: bold; /* ข้อความเน้น */
+    font-size: 1rem; /* ขนาดข้อความ */
+}
+
+/* Animation for Main Content Fade */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Main Content */
@@ -260,6 +325,10 @@ body {
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     display: block;
     overflow: auto;
+    animation: fadeIn 0.4s ease-out; /* การเคลื่อนไหว */
+    position: relative;
+    min-height: 300px; /* กำหนดความสูงขั้นต่ำ */
+    transition: all 0.4s ease-in-out; /* เพิ่ม transition */
 }
 
 /* Logo in Main Content */
@@ -600,5 +669,158 @@ body {
     }
     .container {
         max-width: calc(100% - 220px);
+    }
+}
+
+.profile-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+#profile-upload-form {
+    display: none; /* ซ่อนฟอร์มไว้โดยค่าเริ่มต้น */
+}
+
+#profile-image {
+    display: none; /* ซ่อน input file */
+}
+
+.profile-image-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+}
+
+/* ป้องกันการคลิกผิดในพื้นที่ใกล้เคียง */
+#manage-account-btn {
+    pointer-events: auto; /* เปิดการคลิกเฉพาะปุ่มนี้ */
+}
+
+#profile-upload-input {
+    pointer-events: none; /* ป้องกันการคลิก input file โดยไม่ได้ตั้งใจ */
+}
+
+.profile-container {
+    text-align: center;
+    margin: 20px;
+}
+
+.profile-picture-large {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+.documents {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.document-thumbnail {
+    width: 100px;
+    height: 140px;
+    object-fit: cover;
+}
+
+/* สำหรับหน้าจอที่เล็กกว่า 768px */
+@media screen and (max-width: 768px) {
+    /* Adjust sidebar to stack vertically */
+    .sidebar {
+        width: 100%;
+        max-width: 300px; /* กำหนดขนาดสูงสุด */
+        margin: 0 auto 20px; /* จัดให้อยู่ตรงกลาง */
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    .sidebar ul li {
+        justify-content: center;
+        font-size: 1rem;
+        padding: 10px 15px; /* เพิ่ม Padding */
+        text-align: left; /* จัดข้อความใน Sidebar */
+    }
+
+    /* Align main content to center */
+    .content-container {
+        width: 90%;
+        margin-bottom: 10px;
+        margin: 0 auto;
+    }
+
+    /* Profile container adjustments */
+    .profile-container {
+        width: 90%;
+        margin: 20px auto;
+        padding: 15px;
+        text-align: center;
+    }
+
+    .profile-container img {
+        width: 100px; /* Smaller profile picture for mobile */
+        height: 100px;
+    }
+
+    .profile-container h1 {
+        font-size: 1.5rem;
+    }
+
+    .profile-container .detail-item {
+        font-size: 14px; /* Reduce font size for details */
+        margin: 5px 0;
+    }
+}
+
+/* Media Query for extra-small screens (e.g., very narrow phones) */
+@media screen and (max-width: 480px) {
+    /* Stack sidebar and content completely */
+    .main-layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 90%; /* ลด Sidebar ให้แคบลงอีกสำหรับหน้าจอเล็ก */
+    }
+
+    .sidebar ul li {
+        padding: 8px 12px; /* ลด Padding */
+        font-size: 0.9rem;
+    }
+
+    /* Further reduce profile picture size */
+    .profile-container img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .profile-container h1 {
+        font-size: 1.2rem;
+    }
+
+    .profile-container .detail-item {
+        font-size: 12px;
+    }
+
+    .add-button {
+        bottom: 20px;
+        right: 20px;
+        width: 50px; /* Smaller button for mobile */
+        height: 50px;
+        font-size: 1.5rem;
+    }
+}
+
+@media (min-width: 769px) {
+    .navbar .navbar-nav {
+        max-height: none; /* รีเซ็ตค่าความสูง */
+        display: flex; /* แสดงเป็นแถว */
+        flex-direction: row; /* แนวนอน */
     }
 }

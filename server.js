@@ -4,9 +4,17 @@ const mssql = require('mssql');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
+const multer = require('multer');
+const { BlobServiceClient } = require('@azure/storage-blob');
+require('dotenv').config();
 
+const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Azure Blob Storage Configuration
+const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
+const containerClient = blobServiceClient.getContainerClient("profile-images");
 
 // ตั้งค่า session โดยใช้ default memory store ของ express-session
 app.use(
@@ -28,6 +36,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Static Files
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
+app.use((req, res, next) => {
+    console.log(`Incoming request: ${req.method} ${req.url}`);
+    next();
+});
 
 // Database Configuration
 const dbConfig = {
@@ -51,6 +66,21 @@ const connectWithRetry = async () => {
         setTimeout(connectWithRetry, 5000); // Retry after 5 seconds
     }
 };
+
+// ตั้งค่า multer สำหรับการอัปโหลด
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'public/uploads/profile_images'); // โฟลเดอร์สำหรับเก็บรูปภาพ
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
+    },
+});
+
+const upload = multer({
+    storage: multer.memoryStorage(), // ใช้ memoryStorage เพื่อรองรับการส่งไฟล์ไปยัง Blob Storage
+});
 
 connectWithRetry(); // เรียกใช้การเชื่อมต่อฐานข้อมูลพร้อม Retry Logic
 // Connect to Database
@@ -81,12 +111,39 @@ function requireLogin(req, res, next) {
     next();
 }
 
-// Check Session Endpoint
-app.get('/check_session', (req, res) => {
-    if (req.session.user) {
-        res.json({ success: true, user: req.session.user });
+app.get('/check_session', async (req, res) => {
+    if (req.session && req.session.user) {
+        try {
+            const userId = req.session.user.id;
+
+            // ตรวจสอบว่ามีค่า profile_image_url ใน session หรือไม่
+            if (!req.session.user.profile_image_url || req.session.user.profile_image_url.trim() === "") {
+                console.log("Fetching profile_image_url from database for user ID:", userId);
+
+                const request = new mssql.Request();
+                const result = await request
+                    .input('user_id', mssql.Int, userId)
+                    .query('SELECT profile_image_url FROM dbo.users WHERE id = @user_id');
+
+                if (result.recordset.length > 0) {
+                    req.session.user.profile_image_url =
+                        result.recordset[0].profile_image_url || "https://profilecs436.blob.core.windows.net/profile-images/default-profile.png.webp";
+                }
+            }
+
+            res.json({
+                success: true,
+                user: {
+                    email: req.session.user.email,
+                    profile_image_url: req.session.user.profile_image_url,
+                },
+            });
+        } catch (err) {
+            console.error("Error fetching profile image URL:", err);
+            res.status(500).json({ success: false, message: "Failed to fetch session" });
+        }
     } else {
-        res.status(401).json({ success: false, message: 'Unauthorized' });
+        res.status(401).json({ success: false, message: "Unauthorized" });
     }
 });
 
@@ -165,26 +222,71 @@ app.post('/signin', async (req, res) => {
 });
 
 // Sign Up
-app.post('/signup', async (req, res) => {
-    const { username, email, password, firstName, lastName } = req.body;
+app.post('/signup', upload.single('profileImage'), async (req, res) => {
+    const { username, email, password, firstName, lastName, phone } = req.body;
+
+    // Validation
+    const usernameRegex = /^\S+$/; // No spaces
+    const nameRegex = /^[a-zA-Z]+$/; // Letters only
+    const phoneRegex = /^[0-9]{10}$/; // 10 digits only
+
+    if (!usernameRegex.test(username)) {
+        return res.status(400).json({ success: false, message: 'Username cannot contain spaces.' });
+    }
+
+    if (!nameRegex.test(firstName)) {
+        return res.status(400).json({ success: false, message: 'First Name can only contain letters.' });
+    }
+
+    if (!nameRegex.test(lastName)) {
+        return res.status(400).json({ success: false, message: 'Last Name can only contain letters.' });
+    }
+
+    if (!phoneRegex.test(phone)) {
+        return res.status(400).json({ success: false, message: 'Phone number must be exactly 10 digits.' });
+    }
+
     try {
         const request = new mssql.Request();
         request.input('username', mssql.NVarChar, username);
         request.input('email', mssql.NVarChar, email);
 
         const result = await request.query('SELECT * FROM users WHERE username = @username OR email = @email');
-        if (result.recordset.length > 0) return res.status(400).json({ success: false, message: 'Username or email already exists' });
+
+        if (result.recordset.length > 0) {
+            return res.status(400).json({ success: false, message: 'Username or email already exists.' });
+        }
 
         const hashedPassword = await bcrypt.hash(password, 10);
+
+        let profileImageUrl = "https://profilecs436.blob.core.windows.net/profile-images/default-profile.png.webp";
+
+        if (req.file) {
+            const blobName = `${Date.now()}-${path.basename(req.file.originalname)}`;
+            const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+
+            await blockBlobClient.uploadData(req.file.buffer, {
+                blobHTTPHeaders: { blobContentType: req.file.mimetype },
+            });
+
+            profileImageUrl = blockBlobClient.url;
+        }
+
         request.input('hashedPassword', mssql.NVarChar, hashedPassword);
         request.input('firstName', mssql.NVarChar, firstName);
         request.input('lastName', mssql.NVarChar, lastName);
+        request.input('phone', mssql.NVarChar, phone); // New field
+        request.input('profileImageUrl', mssql.NVarChar, profileImageUrl);
 
-        await request.query('INSERT INTO users (username, email, password, firstName, lastName) VALUES (@username, @email, @hashedPassword, @firstName, @lastName)');
+        await request.query(`
+            INSERT INTO users (username, email, password, firstName, lastName, phone, profile_image_url)
+            VALUES (@username, @email, @hashedPassword, @firstName, @lastName, @phone, @profileImageUrl)
+        `);
+
         res.json({ success: true, message: 'Registration successful' });
     } catch (err) {
         console.error('Error during registration:', err);
-        res.status(500).json({ success: false, message: 'Failed to register user' });
+        res.status(500).json({ success: false, message: 'Failed to register user.' });
     }
 });
 
@@ -285,11 +387,76 @@ app.post('/delete_mail', requireLogin, async (req, res) => {
     }
 });
 
-app.get('/check-session', (req, res) => {
-    if (req.session && req.session.user) {
-        res.json({ loggedIn: true });
-    } else {
-        res.json({ loggedIn: false });
+// Endpoint สำหรับอัปโหลดรูปภาพ
+app.post('/upload_profile', upload.single('profile_image'), async (req, res) => {
+    console.log("POST /upload_profile triggered");
+
+    if (!req.file) {
+        console.error("No file uploaded in request");
+        return res.status(400).json({ success: false, message: "No file uploaded" });
+    }
+
+    try {
+        const blobName = `${Date.now()}-${path.basename(req.file.originalname)}`;
+        const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+
+        console.log("Uploading image to Blob Storage:", blobName);
+
+        await blockBlobClient.uploadData(req.file.buffer, {
+            blobHTTPHeaders: { blobContentType: req.file.mimetype },
+        });
+
+        const profileImageUrl = blockBlobClient.url;
+        console.log("Uploaded Profile Image URL:", profileImageUrl);
+
+        const userId = req.session.user.id;
+
+        const request = new mssql.Request();
+        await request.input('profile_image_url', mssql.NVarChar, profileImageUrl)
+            .input('user_id', mssql.Int, userId)
+            .query('UPDATE dbo.users SET profile_image_url = @profile_image_url WHERE id = @user_id');
+
+        req.session.user.profile_image_url = profileImageUrl;
+        console.log("Session updated with new profile image URL:", req.session.user);
+
+        res.json({ success: true, message: "Profile image updated", url: profileImageUrl });
+    } catch (err) {
+        console.error("Error uploading profile image:", err);
+        res.status(500).json({ success: false, message: "Failed to upload profile image" });
+    }
+});
+
+app.get('/get_user', requireLogin, async (req, res) => {
+    try {
+        const request = new mssql.Request();
+        const result = await request
+            .input('id', mssql.Int, req.session.user.id)
+            .query(`
+                SELECT id, username, email, firstname, lastname, phone, profile_image_url 
+                FROM dbo.users 
+                WHERE id = @id
+            `);
+
+        if (result.recordset.length > 0) {
+            const user = result.recordset[0];
+            res.json({
+                success: true,
+                user: {
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                    firstname: user.firstname || "N/A",
+                    lastname: user.lastname || "N/A",
+                    phone: user.phone,
+                    profile_image_url: user.profile_image_url || 'https://profilecs436.blob.core.windows.net/profile-images/default-profile.png.webp',
+                },
+            });
+        } else {
+            res.status(404).json({ success: false, message: 'User not found' });
+        }
+    } catch (err) {
+        console.error('Error fetching user data:', err);
+        res.status(500).json({ success: false, message: 'Failed to fetch user data' });
     }
 });
 

@@ -6,6 +6,11 @@
     font-family: 'Arial', sans-serif;
 }
 
+html {
+    scroll-behavior: smooth; /* เปิดใช้งานการเลื่อนแบบนุ่มนวล */
+}
+
+
 /* แก้ไขการเลื่อนหน้าจอ */
 body, html {
     overflow-y: auto; /* เปิดใช้งานการเลื่อน */
@@ -486,6 +491,13 @@ p a:hover {
     .navbar-nav .btn-secondary:hover {
         background-color: #4B0082; /* สีพื้นหลังเมื่อ Hover */
         color: #fff; /* สีตัวอักษรเมื่อ Hover */
+    }
+
+    .form-container{
+        width: 90%;
+        margin: 20px auto;
+        padding: 15px;
+        text-align: center;
     }
 }
 
