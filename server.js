@@ -6,13 +6,50 @@ const bcrypt = require('bcryptjs');
 const session = require('express-session');
 const multer = require('multer');
 const { BlobServiceClient } = require('@azure/storage-blob');
+const http = require('http');
+const { Server } = require('socket.io');
 
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
 const app = express();
 const port = process.env.PORT || 8080;
+const server = http.createServer(app); // ใช้ http server
+const io = new Server(server, {
+    cors: {
+        origin: "https://ltchprojectcs436.azurewebsites.net", // โดเมนที่อนุญาต
+        methods: ["GET", "POST"]
+    }
+});
 
 let blobServiceClient; // Define globally
 let containerClient;  // Define globally
+
+// เก็บ socket ของผู้ใช้
+const userSockets = {};
+
+// ตั้งค่า WebSocket
+io.on('connection', (socket) => {
+    console.log('A user connected:', socket.id);
+    console.log('New connection established:', socket.id);
+
+    // ลงทะเบียนอีเมลของผู้ใช้เมื่อเชื่อมต่อ
+    socket.on('register', (email) => {
+        if (email) {
+            userSockets[email] = socket.id; // ผูก email กับ socket ID
+            console.log(`${email} registered with socket ID ${socket.id}`);
+        }
+    });
+
+    // เมื่อผู้ใช้ตัดการเชื่อมต่อ
+    socket.on('disconnect', () => {
+        console.log('A user disconnected:', socket.id);
+        for (const email in userSockets) {
+            if (userSockets[email] === socket.id) {
+                delete userSockets[email]; // ลบ socket ID ที่เลิกใช้งาน
+                break;
+            }
+        }
+    });
+});
 
 // Azure Blob Storage Configuration
 try {
@@ -341,23 +378,17 @@ app.get('/fetch_message', requireLogin, async (req, res) => {
     }
 });
 
+// API สำหรับส่งอีเมล
 app.post('/send_email', requireLogin, async (req, res) => {
     const { recipient, subject, message } = req.body;
     const sender = req.session.user?.email;
 
-    // ตรวจสอบค่าที่จำเป็น
     if (!sender || !recipient || !message) {
         return res.status(400).json({ success: false, message: 'Sender, recipient, and message are required' });
     }
 
-    if (sender === recipient) {
-        return res.status(400).json({ success: false, message: 'You cannot send a message to yourself' });
-    }
-
     try {
         const request = new mssql.Request();
-
-        // ตรวจสอบผู้รับว่ามีอยู่ในระบบ
         request.input('recipient', mssql.NVarChar, recipient);
         const checkRecipient = await request.query('SELECT email FROM users WHERE email = @recipient');
 
@@ -365,23 +396,35 @@ app.post('/send_email', requireLogin, async (req, res) => {
             return res.status(400).json({ success: false, message: 'Recipient email does not exist' });
         }
 
-        // บันทึกข้อความในฐานข้อมูล
+        // บันทึกข้อมูลลงฐานข้อมูล
         request.input('sender', mssql.NVarChar, sender);
         request.input('subject', mssql.NVarChar, subject || '');
         request.input('message', mssql.NVarChar, message);
         request.input('sent_at', mssql.DateTime, new Date());
-
         await request.query(`
             INSERT INTO dbo.mails (sender, recipient, subject, message, sent_at)
             VALUES (@sender, @recipient, @subject, @message, @sent_at)
         `);
 
+        // ตรวจสอบการเชื่อมต่อผู้รับ
+        if (userSockets[recipient]) {
+            console.log(`Sending notification to recipient: ${recipient}`);
+            io.to(userSockets[recipient]).emit('new_mail', {
+                sender,
+                subject,
+                message,
+            });
+        } else {
+            console.log(`Recipient ${recipient} is not online.`);
+        }
+
         res.json({ success: true, message: 'Message sent successfully' });
-    } catch (err) {
-        console.error('Error sending email:', err);
+    } catch (error) {
+        console.error('Error sending email:', error);
         res.status(500).json({ success: false, message: 'Failed to send message' });
     }
 });
+
 
 app.post('/delete_mail', requireLogin, async (req, res) => {
     const { id } = req.body; // รับ ID ของอีเมลที่ต้องการลบจาก Body ของคำขอ
