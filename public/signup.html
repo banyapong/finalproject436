@@ -99,21 +99,32 @@
         document.getElementById('signup-form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value.trim();
             const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
+            const password = document.getElementById('password').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
             const firstName = document.getElementById('firstName').value.trim();
             const lastName = document.getElementById('lastName').value.trim();
             const phone = document.getElementById('phone').value.trim();
 
             // Validation
-            const usernameRegex = /^\S+$/; // No whitespace allowed
+            const noSpaceRegex = /^[^\s]+$/; // ห้ามมี space ทั้งหมด
             const nameRegex = /^[a-zA-Z]+$/; // Letters only
-            const phoneRegex = /^[0-9]{10}$/; // 10-digit numbers only
+            const phoneRegex = /^[0-9]{10}$/; // 10 digits only
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|bumail\.net|bu\.ac\.th)$/; // Allowed domains
 
-            if (!usernameRegex.test(username)) {
+            if (!noSpaceRegex.test(username)) {
                 alert('Username cannot contain spaces.');
+                return;
+            }
+
+            if (!emailRegex.test(email)) {
+                alert('Email must be a valid @gmail.com, @bumail.net, or @bu.ac.th address.');
+                return;
+            }
+
+            if (!noSpaceRegex.test(password)) {
+                alert('Password cannot contain spaces.');
                 return;
             }
 

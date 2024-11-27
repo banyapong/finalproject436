@@ -19,8 +19,8 @@ body, html {
 
 /* Body */
 body {
-    background: linear-gradient(-45deg, #D1C4E9, #E8DFFF, #C37B4E, #F5E3D9);
     background-size: 300% 300%;
+    background: linear-gradient(-45deg, #D1C4E9, #E8DFFF, #C37B4E, #F5E3D9);
     animation: gradient-shift 10s ease infinite;
     overflow: hidden;
     position: relative;
@@ -579,6 +579,48 @@ body {
     background-color: #37006b;
 }
 
+/* รายละเอียด */
+.profile-details {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 1fr; /* หนึ่งคอลัมน์ */
+    gap: 15px; /* เว้นระยะห่างระหว่างข้อมูล */
+    width: 100%; /* ให้เต็มกรอบ */
+    margin: 0 auto;
+}
+
+/* ช่องข้อมูล */
+.detail-item {
+    padding: 15px 20px; /* เพิ่มพื้นที่ภายใน */
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    font-size: 16px;
+    color: #555;
+    display: flex; /* ใช้ Flexbox */
+    justify-content: space-between; /* จัดเนื้อหาซ้าย-ขวา */
+    align-items: center; /* จัดให้อยู่กึ่งกลางแนวตั้ง */
+    width: 100%;
+    max-width: 500px; /* เพิ่มขนาดช่องข้อมูล */
+    margin: 0 auto; /* จัดกึ่งกลาง */
+}
+
+/* ข้อความหัวข้อ */
+.detail-item strong {
+    color: #333;
+    flex: 0 0 40%; /* ใช้พื้นที่ 40% ของความกว้าง */
+    text-align: left; /* จัดชิดซ้าย */
+}
+
+/* ข้อความข้อมูล */
+.detail-item span {
+    color: #555;
+    flex: 1; /* ใช้พื้นที่ที่เหลือ */
+    text-align: left; /* จัดชิดซ้าย */
+    padding-left: 10px; /* เพิ่มระยะห่างจากหัวข้อ */
+    word-wrap: break-word; /* ตัดคำถ้ายาวเกิน */
+}
+
 .mail-details {
     width: 100%;
     background-color: #ffffff;
@@ -586,12 +628,82 @@ body {
     padding: 20px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     margin-top: 20px;
+    font-family: 'Arial', sans-serif; /* ใช้ฟอนต์ที่อ่านง่าย */
+}
+
+.mail-header {
+    display: flex;
+    align-items: flex-start; /* จัดเรียงให้อยู่บนสุด */
+    gap: 15px; /* ช่องว่างระหว่างรูปโปรไฟล์และข้อมูล */
+    margin-bottom: 20px;
+    flex-wrap: wrap; /* ทำให้ข้อความสามารถลงบรรทัดใหม่ได้ */
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* ช่องว่างระหว่างรูปโปรไฟล์และข้อความ */
+}
+
+.profile-picture-wrapper {
+    position: relative; /* ตั้งตำแหน่งของ wrapper เป็น relative */
+    display: inline-block;
+}
+
+.profile-picture {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15); /* เพิ่มเงาให้รูปโปรไฟล์ */
+}
+
+/* ข้อความ hover */
+.hover-text {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.6); /* สีพื้นหลังโปร่งใส */
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 0 0 50% 50%; /* มุมโค้ง */
+    display: none; /* ซ่อนข้อความโดยเริ่มต้น */
+}
+
+.username {
+    font-size: 16px;
+    font-weight: bold;
+    color: #4B0082; /* สีเข้มเพื่อเน้นข้อความ */
+}
+
+/* อีเมล */
+.profile-email {
+    font-size: 20px;
+    font-weight: bold;
+    color: #4B0082;
+    margin: 15px 0;
+}
+
+.email {
+    font-size: 14px;
+    color: #555; /* สีเทาอ่อน */
+}
+
+.mail-title {
+    font-size: 22px;
+    color: #4B0082;
+    font-weight: bold;
+    margin: 0;
+    margin-top: 10px; /* เพิ่มช่องว่างด้านบนหัวข้อ */
 }
 
 .mail-content {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px; /* ช่องว่างระหว่างแต่ละส่วน */
+    padding-top: 10px;
 }
 
 .mail-body {
@@ -607,13 +719,40 @@ body {
 .mail-time {
     font-size: 12px;
     color: #777;
+    text-align: right; /* จัดชิดขวา */
     margin-top: 10px;
+    font-style: italic; /* ข้อความเป็นตัวเอียง */
 }
 
-.mail-title {
-    font-size: 22px;
-    color: #4B0082;
-    margin-bottom: 15px;
+.back-button {
+    display: inline-block;
+    background-color: #4B0082; /* เปลี่ยนสีเป็นสีม่วง */
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease-in-out;
+    margin-bottom: 20px;
+}
+
+.back-button:hover {
+    background-color: #37006c; /* สีม่วงเข้มเมื่อโฮเวอร์ */
+    transform: translateY(-2px); /* ยกขึ้นเล็กน้อยเมื่อโฮเวอร์ */
+}
+
+.back-button:active {
+    transform: translateY(2px); /* กดลงเล็กน้อยเมื่อคลิก */
+}
+
+.mail-footer {
+    margin-top: 20px;
+    font-size: 12px;
+    color: #555;
+    text-align: center;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
 }
 
 .content-container {
@@ -625,6 +764,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    
 }
 
 .content-container .logo {
@@ -682,6 +822,27 @@ body {
 
 #profile-upload-form {
     display: none; /* ซ่อนฟอร์มไว้โดยค่าเริ่มต้น */
+    margin-top: 20px;
+    text-align: center;
+}
+
+#profile-upload-form label {
+    font-size: 14px;
+    margin-right: 10px;
+}
+
+#profile-upload-form button {
+    margin-top: 10px;
+    padding: 8px 20px;
+    background-color: #4B0082;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#profile-upload-form button:hover {
+    background-color: #37006c; /* สีเข้มขึ้นเมื่อ hover */
 }
 
 #profile-image {
@@ -708,13 +869,22 @@ body {
 
 .profile-container {
     text-align: center;
-    margin: 20px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 600px; /* เพิ่มความกว้าง */
+    width: 100%; /* ใช้พื้นที่เต็มความกว้างที่กำหนด */
+    margin: 20px auto; /* จัดให้อยู่กึ่งกลาง */
 }
 
+/* รูปโปรไฟล์ */
 .profile-picture-large {
     width: 150px;
     height: 150px;
     border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ccc;
     margin-bottom: 20px;
 }
 
@@ -868,3 +1038,44 @@ body {
         transform: translateY(0);
     }
 }
+
+.message-item.read {
+    background-color: #f0f0f0; /* สีที่อ่อนลงสำหรับเมลที่อ่านแล้ว */
+}
+
+.message-item.unread {
+    background-color: #ffffff; /* สีปกติสำหรับเมลที่ยังไม่ได้อ่าน */
+    font-weight: bold; /* ตัวหนาเพื่อเน้นข้อความ */
+}
+
+#refresh-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #007BFF; /* ใช้สีฟ้าสด */
+    color: white;
+    border: none;
+    border-radius: 50%; /* ทำให้ปุ่มเป็นวงกลม */
+    width: 40px;
+    height: 40px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* เงาเล็กน้อย */
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s; /* เพิ่มเอฟเฟกต์ */
+    font-size: 18px;
+}
+
+#refresh-button:hover {
+    background-color: #0056b3; /* สีฟ้าเข้มขึ้นเมื่อโฮเวอร์ */
+    transform: scale(1.1); /* ขยายเล็กน้อยเมื่อโฮเวอร์ */
+}
+
+#refresh-button:active {
+    transform: scale(0.95); /* หดเล็กน้อยเมื่อกด */
+}
+
+#refresh-button:focus {
+    outline: none; /* ลบเส้นโฟกัส */
+    box-shadow: 0px 0px 4px 2px rgba(0, 123, 255, 0.5); /* เพิ่มเงาเมื่อโฟกัส */
+}
+
+

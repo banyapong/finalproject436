@@ -7,49 +7,16 @@ const session = require('express-session');
 const multer = require('multer');
 const { BlobServiceClient } = require('@azure/storage-blob');
 const http = require('http');
-const { Server } = require('socket.io');
 
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
 const app = express();
-const port = process.env.PORT || 8080;
-const server = http.createServer(app); // ใช้ http server
-const io = new Server(server, {
-    cors: {
-        origin: "https://ltchprojectcs436.azurewebsites.net", // โดเมนที่อนุญาต
-        methods: ["GET", "POST"]
-    }
-});
+const port = process.env.PORT || 3000;
 
 let blobServiceClient; // Define globally
 let containerClient;  // Define globally
 
 // เก็บ socket ของผู้ใช้
 const userSockets = {};
-
-// ตั้งค่า WebSocket
-io.on('connection', (socket) => {
-    console.log('A user connected:', socket.id);
-    console.log('New connection established:', socket.id);
-
-    // ลงทะเบียนอีเมลของผู้ใช้เมื่อเชื่อมต่อ
-    socket.on('register', (email) => {
-        if (email) {
-            userSockets[email] = socket.id; // ผูก email กับ socket ID
-            console.log(`${email} registered with socket ID ${socket.id}`);
-        }
-    });
-
-    // เมื่อผู้ใช้ตัดการเชื่อมต่อ
-    socket.on('disconnect', () => {
-        console.log('A user disconnected:', socket.id);
-        for (const email in userSockets) {
-            if (userSockets[email] === socket.id) {
-                delete userSockets[email]; // ลบ socket ID ที่เลิกใช้งาน
-                break;
-            }
-        }
-    });
-});
 
 // Azure Blob Storage Configuration
 try {
@@ -237,10 +204,17 @@ app.get('/mail', checkLoggedIn, (req, res) => {
 
 // Sign In
 app.post('/signin', async (req, res) => {
-    const { username, password } = req.body;
+    let { username, password } = req.body;
+
+    // ลบช่องว่างก่อน-หลัง และตรวจสอบว่ามีข้อมูล
+    username = username?.trim();
+    password = password?.trim();
 
     if (!username || !password) {
-        return res.status(400).json({ success: false, message: 'Username or password is missing' });
+        return res.status(400).json({
+            success: false,
+            message: 'Username or password cannot be empty or contain only spaces',
+        });
     }
 
     try {
@@ -277,12 +251,21 @@ app.post('/signup', upload.single('profileImage'), async (req, res) => {
     const { username, email, password, firstName, lastName, phone } = req.body;
 
     // Validation
-    const usernameRegex = /^\S+$/; // No spaces
+    const noSpaceRegex = /^[^\s]+$/; // ห้ามมี space ทั้งหมด
     const nameRegex = /^[a-zA-Z]+$/; // Letters only
     const phoneRegex = /^[0-9]{10}$/; // 10 digits only
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|bumail\.net|bu\.ac\.th)$/; // Allowed email domains
 
-    if (!usernameRegex.test(username)) {
+    if (!noSpaceRegex.test(username)) {
         return res.status(400).json({ success: false, message: 'Username cannot contain spaces.' });
+    }
+
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ success: false, message: 'Email must be a valid @gmail.com, @bumail.net, or @bu.ac.th address.' });
+    }
+
+    if (!noSpaceRegex.test(password)) {
+        return res.status(400).json({ success: false, message: 'Password cannot contain spaces.' });
     }
 
     if (!nameRegex.test(firstName)) {
@@ -326,7 +309,7 @@ app.post('/signup', upload.single('profileImage'), async (req, res) => {
         request.input('hashedPassword', mssql.NVarChar, hashedPassword);
         request.input('firstName', mssql.NVarChar, firstName);
         request.input('lastName', mssql.NVarChar, lastName);
-        request.input('phone', mssql.NVarChar, phone); // New field
+        request.input('phone', mssql.NVarChar, phone);
         request.input('profileImageUrl', mssql.NVarChar, profileImageUrl);
 
         await request.query(`
@@ -351,25 +334,42 @@ app.get('/fetch_message', requireLogin, async (req, res) => {
 
         if (mode === 'inbox') {
             query = `
-                SELECT id, sender, recipient, subject, message, sent_at
-                FROM dbo.mails
+                SELECT 
+                    mails.id, 
+                    mails.sender, 
+                    mails.recipient, 
+                    mails.subject, 
+                    mails.message, 
+                    mails.sent_at, 
+                    mails.is_read_by_recipient AS is_read, 
+                    users.username AS sender_username,
+                    users.profile_image_url AS profile_image
+                FROM dbo.mails 
+                LEFT JOIN dbo.users ON dbo.mails.sender = dbo.users.email
                 WHERE recipient = @userEmail
-                ORDER BY sent_at DESC
+                ORDER BY mails.sent_at DESC
             `;
         } else if (mode === 'sent') {
             query = `
-                SELECT id, sender, recipient, subject, message, sent_at
-                FROM dbo.mails
+                SELECT 
+                    mails.id, 
+                    mails.sender, 
+                    mails.recipient, 
+                    mails.subject, 
+                    mails.message, 
+                    mails.sent_at, 
+                    mails.is_read_by_sender AS is_read, 
+                    users.username AS recipient_username,
+                    users.profile_image_url AS profile_image
+                FROM dbo.mails 
+                LEFT JOIN dbo.users ON dbo.mails.recipient = dbo.users.email
                 WHERE sender = @userEmail
-                ORDER BY sent_at DESC
+                ORDER BY mails.sent_at DESC
             `;
         }
 
         request.input('userEmail', mssql.NVarChar, email);
         const result = await request.query(query);
-
-        // Log ข้อมูลที่ถูกส่งกลับไปยัง Client
-        console.log('Result from DB:', result.recordset);
 
         res.json(result.recordset);
     } catch (err) {
@@ -379,52 +379,49 @@ app.get('/fetch_message', requireLogin, async (req, res) => {
 });
 
 // API สำหรับส่งอีเมล
-app.post('/send_email', requireLogin, async (req, res) => {
+app.post('/send_email', async (req, res) => {
     const { recipient, subject, message } = req.body;
-    const sender = req.session.user?.email;
+    const sender = req.session.user?.email; // ดึงอีเมลของผู้ส่งจาก session
 
     if (!sender || !recipient || !message) {
-        return res.status(400).json({ success: false, message: 'Sender, recipient, and message are required' });
+        return res.status(400).json({ success: false, message: 'Sender, recipient, and message are required.' });
     }
 
     try {
+        // บันทึกเมลลงฐานข้อมูล
         const request = new mssql.Request();
-        request.input('recipient', mssql.NVarChar, recipient);
-        const checkRecipient = await request.query('SELECT email FROM users WHERE email = @recipient');
-
-        if (checkRecipient.recordset.length === 0) {
-            return res.status(400).json({ success: false, message: 'Recipient email does not exist' });
-        }
-
-        // บันทึกข้อมูลลงฐานข้อมูล
         request.input('sender', mssql.NVarChar, sender);
+        request.input('recipient', mssql.NVarChar, recipient);
         request.input('subject', mssql.NVarChar, subject || '');
         request.input('message', mssql.NVarChar, message);
         request.input('sent_at', mssql.DateTime, new Date());
+
         await request.query(`
             INSERT INTO dbo.mails (sender, recipient, subject, message, sent_at)
             VALUES (@sender, @recipient, @subject, @message, @sent_at)
         `);
 
-        // ตรวจสอบการเชื่อมต่อผู้รับ
+        // Log การส่งเมล
+        console.log(`Email sent from ${sender} to ${recipient}`);
+
+        // ส่ง Event แจ้งเตือนไปยังผู้ส่งโดยไม่สนใจว่าผู้รับออนไลน์หรือไม่
         if (userSockets[recipient]) {
-            console.log(`Sending notification to recipient: ${recipient}`);
+            console.log(`Recipient ${recipient} is online. Sending new_mail notification.`);
             io.to(userSockets[recipient]).emit('new_mail', {
                 sender,
                 subject,
                 message,
             });
         } else {
-            console.log(`Recipient ${recipient} is not online.`);
-        }
+            console.log(`Recipient ${recipient} is not online. No notification sent.`);
+        }        
 
         res.json({ success: true, message: 'Message sent successfully' });
-    } catch (error) {
-        console.error('Error sending email:', error);
+    } catch (err) {
+        console.error('Error sending email:', err);
         res.status(500).json({ success: false, message: 'Failed to send message' });
     }
 });
-
 
 app.post('/delete_mail', requireLogin, async (req, res) => {
     const { id } = req.body; // รับ ID ของอีเมลที่ต้องการลบจาก Body ของคำขอ
@@ -514,6 +511,39 @@ app.get('/get_user', requireLogin, async (req, res) => {
     } catch (err) {
         console.error('Error fetching user data:', err);
         res.status(500).json({ success: false, message: 'Failed to fetch user data' });
+    }
+});
+
+app.post('/mark_as_read', requireLogin, async (req, res) => {
+    const { id, mode } = req.body;
+
+    if (!id || !mode) {
+        return res.status(400).json({ success: false, message: 'Message ID and mode are required' });
+    }
+
+    try {
+        const request = new mssql.Request();
+
+        // อัปเดต `is_read_by_recipient` สำหรับ `inbox` และ `is_read_by_sender` สำหรับ `sent`
+        const query = `
+            UPDATE dbo.mails
+            SET ${mode === 'inbox' ? 'is_read_by_recipient' : 'is_read_by_sender'} = 1
+            WHERE id = @id AND ${mode === 'inbox' ? 'recipient' : 'sender'} = @userEmail
+        `;
+
+        request.input('id', mssql.Int, id);
+        request.input('userEmail', mssql.NVarChar, req.session.user.email);
+
+        const result = await request.query(query);
+
+        if (result.rowsAffected[0] === 0) {
+            return res.status(404).json({ success: false, message: 'Message not found or unauthorized' });
+        }
+
+        res.json({ success: true, message: 'Message marked as read' });
+    } catch (err) {
+        console.error('Error marking message as read:', err);
+        res.status(500).json({ success: false, message: 'Failed to mark message as read' });
     }
 });
 

@@ -68,24 +68,29 @@
         });
 
         document.getElementById('signin-form').addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevent form refresh
 
-            e.preventDefault();  // Prevent form refresh
+            let username = document.getElementById('username').value.trim(); // Remove spaces
+            let password = document.getElementById('password').value.trim(); // Remove spaces
 
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+            // ตรวจสอบว่า username และ password ไม่เป็นค่าว่าง หรือช่องว่างล้วนๆ
+            if (!username || !password) {
+                alert('Username or password cannot be empty or contain only spaces');
+                return;
+            }
 
             try {
                 const response = await fetch('/signin', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
+                    body: JSON.stringify({ username, password }),
                 });
 
                 const data = await response.json();
                 if (data.success) {
-                    window.location.href = '/mail';  // Redirect to mail page
+                    window.location.href = '/mail'; // Redirect to mail page
                 } else {
-                    alert(data.message);  // Show error message
+                    alert(data.message); // Show error message
                 }
             } catch (error) {
                 alert('Error during sign in');

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mail System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="page/fds.css">
 </head>
 <body>
@@ -34,19 +34,7 @@
                     </li>
                     <li>
                         <a class="dropdown-item" href="#" id="manage-account-btn">Manage Account</a>
-                    </li>
-                    <li>
-                        <label class="dropdown-item" style="cursor: pointer;">
-                            Change Profile Picture
-                            <input
-                                type="file"
-                                id="profile-upload-input"
-                                name="profile_image"
-                                accept="image/*"
-                                style="display: none;"
-                            >
-                        </label>
-                    </li>                    
+                    </li>                  
                     <li>
                         <hr class="dropdown-divider">
                     </li>
@@ -227,45 +215,29 @@
                             const user = data.user;
 
                             mainContent.innerHTML = `
-                                <div class="profile-container" style="text-align: center; padding: 20px;">
-                                    <div class="profile-picture-wrapper" style="position: relative; display: inline-block;">
+                                <div class="profile-container">
+                                    <div class="profile-picture-wrapper">
                                         <img 
                                             id="profile-picture"
-                                            src="${user.profile_image_url}" 
+                                            src="${user.profile_image_url || 'https://profilecs436.blob.core.windows.net/profile-images/default-profile.png.webp'}" 
                                             alt="Profile Picture" 
-                                            class="profile-picture-large" 
-                                            style="cursor: pointer; border-radius: 50%; width: 150px; height: 150px; object-fit: cover; border: 2px solid #ccc;"
+                                            class="profile-picture-large"
                                         >
-                                        <div 
-                                            class="hover-text" 
-                                            style="
-                                                position: absolute;
-                                                bottom: 0;
-                                                width: 100%;
-                                                background: rgba(0, 0, 0, 0.6);
-                                                color: white;
-                                                font-size: 14px;
-                                                text-align: center;
-                                                padding: 5px 0;
-                                                display: none;
-                                                cursor: pointer;
-                                            ">
-                                            Change Profile Picture
-                                        </div>
+                                        <div class="hover-text">Change Profile Picture</div>
                                     </div>
-                                    <h1 style="margin-top: 20px;">${user.email}</h1>
-                                    <div class="profile-details" style="margin-top: 20px; text-align: left; display: inline-block;">
-                                        <div class="detail-item" style="margin: 10px 0;">
-                                            <strong>First Name:</strong> ${user.firstname || "N/A"}
+                                    <h2 class="profile-email">${user.email}</h2>
+                                    <div class="profile-details">
+                                        <div class="detail-item">
+                                            <strong>First Name:</strong> <span>${user.firstname || "N/A"}</span>
                                         </div>
-                                        <div class="detail-item" style="margin: 10px 0;">
-                                            <strong>Last Name:</strong> ${user.lastname || "N/A"}
+                                        <div class="detail-item">
+                                            <strong>Last Name:</strong> <span>${user.lastname || "N/A"}</span>
                                         </div>
-                                        <div class="detail-item" style="margin: 10px 0;">
-                                            <strong>Username:</strong> ${user.username || "N/A"}
+                                        <div class="detail-item">
+                                            <strong>Username:</strong> <span>${user.username || "N/A"}</span>
                                         </div>
-                                        <div class="detail-item" style="margin: 10px 0;">
-                                            <strong>Phone Number:</strong> ${user.phone || "N/A"}
+                                        <div class="detail-item">
+                                            <strong>Phone Number:</strong> <span>${user.phone || "N/A"}</span>
                                         </div>
                                     </div>
                                     <input 
@@ -336,6 +308,7 @@
                 console.log("File Picker clicked.");
             });
 
+            profileUploadInput.addEventListener("change", async (e) => {
             profileImageInput.addEventListener("change", async (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -351,6 +324,7 @@
 
                     const result = await response.json();
                     if (result.success) {
+                        alert("Profile image updated successfully!");
                         alert("Profile picture updated successfully!");
 
                         // อัปเดตรูปภาพโปรไฟล์ใน navbar และ dropdown
@@ -360,6 +334,7 @@
                         // Refresh เนื้อหาโปรไฟล์
                         document.getElementById("manage-account-btn").click(); // Load profile details again
                     } else {
+                        alert("Failed to update profile image.");
                         alert("Failed to update profile picture.");
                     }
                 } catch (err) {
@@ -374,6 +349,7 @@
             });
         });
 
+    });
         let currentMode = 'inbox'; // เก็บสถานะโหมดเริ่มต้นเป็น Inbox
 
         async function fetchMessages(mode = 'inbox') {
@@ -393,13 +369,21 @@
                         <div class="message-box">
                             <div class="message-box-header">
                                 <h2 class="message-box-title">${mode === 'inbox' ? 'Inbox Messages' : 'Sent Messages'}</h2>
+                                <button id="refresh-button" onclick="fetchMessages('${mode}')">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
                                 <input id="search-input" type="text" placeholder="Search by ${mode === 'inbox' ? 'sender' : 'recipient'}" />
+                                <select id="search-mode" style="display: none;">
+                                    <option value="${mode === 'inbox' ? 'sender' : 'recipient'}"></option>
+                                </select>
                             </div>
                             <div id="messages-container" class="messages-container">
                                 ${messages.map(msg => `
-                                    <div class="message-item" onclick='viewMessage(${JSON.stringify(msg)})'>
+                                    <div class="message-item ${msg.is_read ? 'read' : 'unread'}" data-id="${msg.id}">
                                         <div class="message-content">
-                                            <h3>${mode === 'inbox' ? (msg.sender || 'Unknown Sender') : (msg.recipient || 'Unknown Recipient')}</h3>
+                                            <h3 class="${mode === 'inbox' ? 'sender' : 'recipient'}">
+                                                ${mode === 'inbox' ? (msg.sender || 'Unknown Sender') : (msg.recipient || 'Unknown Recipient')}
+                                            </h3>
                                             <p class="message-subject">${msg.subject || 'No Subject'}</p>
                                             <p class="message-preview">${msg.message.slice(0, 50) || 'No Content'}...</p>
                                             <small class="message-time">${new Date(msg.sent_at).toLocaleString()}</small>
@@ -410,6 +394,21 @@
                             </div>
                         </div>
                     `;
+
+                    // เพิ่ม event listeners ให้กับเมล
+                    const messageItems = document.querySelectorAll('.message-item');
+                    messageItems.forEach(item => {
+                        const messageId = item.getAttribute('data-id');
+                        item.addEventListener('click', () => {
+                            const message = messages.find(msg => msg.id == messageId);
+                            if (message) {
+                                viewMessage(message);
+                            }
+                        });
+                    });
+
+                    // เรียกใช้งาน enableSearch() หลังจากสร้าง HTML เสร็จ
+                    enableSearch();
                 } else {
                     if (logo) logo.style.display = 'block';
                     container.classList.remove('active-content');
@@ -426,14 +425,29 @@
             const logo = document.getElementById('initial-logo');
             if (logo) logo.style.display = 'none';
 
+            // เลือกข้อมูลผู้ส่งหรือผู้รับตามโหมด
+            const username = currentMode === 'inbox' ? mail.sender_username : mail.recipient_username;
+            const email = currentMode === 'inbox' ? mail.sender : mail.recipient;
+            const profileImage = mail.profile_image || 'https://profilecs436.blob.core.windows.net/profile-images/default-profile.png.webp';
+
             container.innerHTML = `
                 <div class="mail-details">
-                    <button onclick="fetchMessages(currentMode)" class="back-button">&larr; Back to ${currentMode === 'inbox' ? 'Inbox' : 'Sent'}</button>
+                    <button onclick="fetchMessages(currentMode)" class="back-button">
+                        &larr; Back to ${currentMode === 'inbox' ? 'Inbox' : 'Sent'}
+                    </button>
                     <div class="mail-content">
-                        <h2 class="mail-title">Mail Details</h2>
-                        <p><strong>From:</strong> ${mail.sender || 'Unknown Sender'}</p>
-                        <p><strong>To:</strong> ${mail.recipient || 'Unknown Recipient'}</p>
-                        <p><strong>Subject:</strong> ${mail.subject || 'No Subject'}</p>
+                        <div class="mail-header">
+                            <div class="profile-info">
+                                <img src="${profileImage}" alt="Profile Picture" class="profile-picture">
+                                <div class="profile-details">
+                                    <p class="username">
+                                        ${username || 'Unknown User'} 
+                                        <span class="email">(${email || 'Unknown'})</span>
+                                    </p>
+                                    <h2 class="mail-title">${mail.subject || 'No Subject'}</h2>
+                                </div>
+                            </div>
+                        </div>
                         <div class="mail-body">
                             <p style="white-space: pre-wrap;">${mail.message || 'No Content'}</p>
                         </div>
@@ -441,6 +455,35 @@
                     </div>
                 </div>
             `;
+
+            // อัปเดตสถานะเป็นอ่าน
+            fetch('/mark_as_read', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: mail.id, mode: currentMode }), // เพิ่ม mode
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to mark as read');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data.message);
+
+                    // อัปเดตสถานะใน UI
+                    const messageElement = document.querySelector(`.message-item[data-id="${mail.id}"]`);
+                    if (messageElement) {
+                        messageElement.classList.remove('unread');
+                        messageElement.classList.add('read');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error marking message as read:', error);
+                });
+
         }
 
         async function deleteMessage(event, id) {
@@ -519,13 +562,20 @@
 
         function enableSearch() {
             const searchInput = document.getElementById('search-input');
+            const searchMode = document.getElementById('search-mode'); // ใช้เก็บโหมดปัจจุบัน
             const messages = document.querySelectorAll('.message-item');
 
             searchInput.addEventListener('keyup', () => {
                 const filter = searchInput.value.toLowerCase();
+                const mode = searchMode.value; // รับค่าโหมด
+
                 messages.forEach(message => {
-                    const sender = message.querySelector('h3').innerText.toLowerCase();
-                    if (sender.includes(filter)) {
+                    const sender = message.querySelector('.sender')?.innerText.toLowerCase() || ''; // ตรวจสอบ class sender
+                    const recipient = message.querySelector('.recipient')?.innerText.toLowerCase() || ''; // ตรวจสอบ class recipient
+
+                    if (mode === 'recipient' && recipient.includes(filter)) {
+                        message.style.display = '';
+                    } else if (mode === 'sender' && sender.includes(filter)) {
                         message.style.display = '';
                     } else {
                         message.style.display = 'none';
@@ -533,51 +583,33 @@
                 });
             });
         }
+    
+        fetch('/mark_as_read', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: mail.id, mode: currentMode }), // เพิ่ม mode
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to mark as read');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data.message);
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const socket = io('https://ltchprojectcs436.azurewebsites.net', {
-                transports: ['websocket'], // ใช้ WebSocket อย่างเดียว
+                // อัปเดตสถานะใน UI
+                const messageElement = document.querySelector(`.message-item[data-id="${mail.id}"]`);
+                if (messageElement) {
+                    messageElement.classList.remove('unread');
+                    messageElement.classList.add('read');
+                }
+            })
+            .catch(error => {
+                console.error('Error marking message as read:', error);
             });
-
-            socket.on('connect', () => {
-                console.log('WebSocket connected:', socket.id);
-            });
-
-            socket.on('disconnect', () => {
-                console.warn('WebSocket disconnected');
-            });
-
-            const loggedInUserEmail = "user@example.com"; // แทนที่ด้วยอีเมลจากระบบ
-            if (loggedInUserEmail) {
-                socket.emit('register', loggedInUserEmail); // ลงทะเบียนอีเมลผู้ใช้
-            }
-
-            socket.on('new_mail', (data) => {
-                const { sender, subject, message } = data;
-                console.log('New mail received:', data); // Debug ข้อมูลใน Console
-                showNotificationPopup(sender, subject, message); // แสดง Popup
-            });
-
-            function showNotificationPopup(sender, subject, message) {
-                const popup = document.createElement('div');
-                popup.classList.add('notification-popup');
-                popup.innerHTML = `
-                    <div>
-                        <strong>New mail from: ${sender}</strong>
-                        <p><strong>Subject:</strong> ${subject}</p>
-                        <p>${message}</p>
-                    </div>
-                    <button class="close-popup">Close</button>
-                `;
-                document.body.appendChild(popup);
-
-                // ปิด Popup เมื่อคลิกปุ่ม
-                popup.querySelector('.close-popup').addEventListener('click', () => popup.remove());
-
-                // ลบ Popup อัตโนมัติหลัง 10 วินาที
-                setTimeout(() => popup.remove(), 10000);
-            }
-        });
 
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
