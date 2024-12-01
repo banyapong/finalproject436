@@ -40,7 +40,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #4B0082;
+    background-color: blue;
     z-index: 9999;
     opacity: 0;
     pointer-events: none;
@@ -219,7 +219,7 @@ body {
     width: 100%; /* ใช้เต็มความกว้างสำหรับหน้าจอแคบ */
     max-width: 300px; /* กำหนดความกว้างสูงสุด */
     background-color: #ffffff; /* สีพื้นหลัง */
-    border-radius: 15px; /* มุมโค้ง */
+    border-radius: 12px; /* มุมโค้ง */
     padding: 20px; /* ระยะห่างภายในเพิ่มขึ้น */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* เพิ่มเงา */
     display: flex; /* ใช้ Flexbox */
@@ -249,7 +249,7 @@ body {
     align-items: center;
     padding: 15px; /* ระยะห่างภายใน */
     font-size: 1rem;
-    color: #4B0082;
+    color: blue;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
     background-color: #f9f9f9;
@@ -262,7 +262,7 @@ body {
 /* Highlight Active Sidebar Item */
 .sidebar ul li.active {
     background-color: #e0e0ff; /* พื้นหลังแตกต่างสำหรับหัวข้อที่เลือก */
-    color: #4B0082; /* สีข้อความ */
+    color: black; /* สีข้อความ */
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     transform: scale(1.05); /* ขยายเล็กน้อย */
     font-weight: bold;
@@ -383,7 +383,7 @@ body {
 .message-content .message-subject {
     font-size: 14px;
     font-weight: bold;
-    color: #4B0082;
+    color: black;
 }
 
 .message-content .message-preview {
@@ -433,7 +433,7 @@ body {
     position: fixed; /* ปุ่มจะอยู่กับที่แม้เลื่อนหน้า */
     bottom: 20px; /* ระยะจากด้านล่าง */
     right: 20px; /* ระยะจากด้านขวา */
-    background-color: #4B0082; /* สีม่วง */
+    background-color: blue; /* สีม่วง */
     color: #ffffff; /* สีตัวอักษรสีขาว */
     width: 50px; /* ความกว้าง */
     height: 50px; /* ความสูง */
@@ -447,7 +447,7 @@ body {
 
 
 .add-button:hover {
-    background-color: #37006b;
+    background-color: blue;
 }
 
 /* Popup */
@@ -474,7 +474,7 @@ body {
 
 .popup-content label {
     font-size: 1rem;
-    color: #4B0082;
+    color: black;
     display: block;
     margin-bottom: 5px;
 }
@@ -486,7 +486,7 @@ body {
 }
 
 .popup-content h2 {
-    color: #4B0082;
+    color: black;
     margin-bottom: 20px;
     text-align: center;
 }
@@ -549,7 +549,7 @@ body {
     width: 100%;
     padding: 10px;
     border-radius: 8px;
-    background-color: #4B0082;
+    background-color: blue;
     color: #ffffff;
     border: none;
     font-size: 1rem;
@@ -558,11 +558,11 @@ body {
 }
 
 .popup-content .btn-primary:hover {
-    background-color: #37006b;
+    background-color: blue;
 }
 
 .back-button {
-    background-color: #4B0082;
+    background-color: blue;
     color: #ffffff;
     border: none;
     border-radius: 8px;
@@ -575,7 +575,7 @@ body {
 }
 
 .back-button:hover {
-    background-color: #37006b;
+    background-color: blue;
 }
 
 /* รายละเอียด */
@@ -674,14 +674,14 @@ body {
 .username {
     font-size: 16px;
     font-weight: bold;
-    color: #4B0082; /* สีเข้มเพื่อเน้นข้อความ */
+    color: black; /* สีเข้มเพื่อเน้นข้อความ */
 }
 
 /* อีเมล */
 .profile-email {
     font-size: 20px;
     font-weight: bold;
-    color: #4B0082;
+    color: black;
     margin: 15px 0;
 }
 
@@ -692,7 +692,7 @@ body {
 
 .mail-title {
     font-size: 22px;
-    color: #4B0082;
+    color: black;
     font-weight: bold;
     margin: 0;
     margin-top: 10px; /* เพิ่มช่องว่างด้านบนหัวข้อ */
@@ -725,7 +725,7 @@ body {
 
 .back-button {
     display: inline-block;
-    background-color: #4B0082; /* เปลี่ยนสีเป็นสีม่วง */
+    background-color: blue; /* เปลี่ยนสีเป็นสีม่วง */
     color: white;
     padding: 8px 15px;
     border: none;
