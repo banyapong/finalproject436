@@ -110,48 +110,47 @@
             };
 
             // Validation
-            if (data.password !== data.confirmPassword) {
+            const noSpaceRegex = /^[^\s]+$/;
+            const nameRegex = /^[a-zA-Z]+$/;
+            const phoneRegex = /^[0-9]{10}$/;
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|bumail\.net|bu\.ac\.th)$/;
 
-            const noSpaceRegex = /^[^\s]+$/; // ห้ามมี space ทั้งหมด
-            const nameRegex = /^[a-zA-Z]+$/; // Letters only
-            const phoneRegex = /^[0-9]{10}$/; // 10 digits only
-            const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|bumail\.net|bu\.ac\.th)$/; // Allowed domains
-
-            if (!noSpaceRegex.test(username)) {
+            if (!noSpaceRegex.test(data.username)) {
                 alert('Username cannot contain spaces.');
                 return;
             }
 
-            if (!emailRegex.test(email)) {
+            if (!emailRegex.test(data.email)) {
                 alert('Email must be a valid @gmail.com, @bumail.net, or @bu.ac.th address.');
                 return;
             }
 
-            if (!noSpaceRegex.test(password)) {
+            if (!noSpaceRegex.test(data.password)) {
                 alert('Password cannot contain spaces.');
                 return;
             }
 
-            if (!nameRegex.test(firstName)) {
+            if (!nameRegex.test(data.firstName)) {
                 alert('First Name can only contain letters.');
                 return;
             }
 
-            if (!nameRegex.test(lastName)) {
+            if (!nameRegex.test(data.lastName)) {
                 alert('Last Name can only contain letters.');
                 return;
             }
 
-            if (!phoneRegex.test(phone)) {
+            if (!phoneRegex.test(data.phone)) {
                 alert('Phone number must be exactly 10 digits.');
                 return;
             }
 
-            if (password !== confirmPassword) {
+            if (data.password !== data.confirmPassword) {
                 alert('Passwords do not match.');
                 return;
             }
 
+            // Submit Form
             try {
                 const response = await fetch('/signup', {
                     method: 'POST',
@@ -172,8 +171,6 @@
                 console.error('Error during registration:', err);
                 alert('An error occurred during registration. Please try again.');
             }
-        }
-
         });
 
         window.addEventListener('resize', function () {
