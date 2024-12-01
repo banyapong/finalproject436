@@ -248,63 +248,50 @@ app.post('/signin', async (req, res) => {
 
 // Sign Up
 app.post('/signup', async (req, res) => {
-    const { username, email, password, firstName, lastName, phone } = req.body;
-
-    // Validation
-    const noSpaceRegex = /^[^\s]+$/; // ห้ามมี space ทั้งหมด
-    const nameRegex = /^[a-zA-Z]+$/; // Letters only
-    // const phoneRegex = /^[0-9]{10}$/; // 10 digits only
-    // const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|bumail\.net|bu\.ac\.th)$/; // Allowed email domains
-
-    if (!noSpaceRegex.test(username)) {
-        return res.status(400).json({ success: false, message: 'Username cannot contain spaces.' });
-    }
-
-    // if (!emailRegex.test(email)) {
-    //     return res.status(400).json({ success: false, message: 'Email must be a valid @gmail.com, @bumail.net, or @bu.ac.th address.' });
-    // }
-
-    if (!noSpaceRegex.test(password)) {
-        return res.status(400).json({ success: false, message: 'Password cannot contain spaces.' });
-    }
-
-    if (!nameRegex.test(firstName)) {
-        return res.status(400).json({ success: false, message: 'First Name can only contain letters.' });
-    }
-
-    if (!nameRegex.test(lastName)) {
-        return res.status(400).json({ success: false, message: 'Last Name can only contain letters.' });
-    }
-
-    // if (!phoneRegex.test(phone)) {
-    //     return res.status(400).json({ success: false, message: 'Phone number must be exactly 10 digits.' });
-    // }
-
     try {
+        const { username, email, password, firstName, lastName, phone } = req.body;
+
+        // ตรวจสอบข้อมูลที่ส่งมาครบหรือไม่
+        if (!username || !email || !password || !firstName || !lastName || !phone) {
+            return res.status(400).json({ success: false, message: 'All fields are required.' });
+        }
+
+        // ตรวจสอบรูปแบบข้อมูล
+        const noSpaceRegex = /^[^\s]+$/; // ห้ามมีช่องว่าง
+        const nameRegex = /^[a-zA-Z]+$/; // ตัวอักษรภาษาอังกฤษเท่านั้น
+        const phoneRegex = /^[0-9]{10}$/; // 10 digits only
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|bumail\.net|bu\.ac\.th)$/; // Allowed email domains
+        if (!noSpaceRegex.test(username)) {
+            return res.status(400).json({ success: false, message: 'Username cannot contain spaces.' });
+        }
+        if (!nameRegex.test(firstName) || !nameRegex.test(lastName)) {
+            return res.status(400).json({ success: false, message: 'First and Last Name can only contain letters.' });
+        }
+
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ success: false, message: 'Email must be a valid @gmail.com, @bumail.net, or @bu.ac.th address.' });
+        }
+
+        if (!noSpaceRegex.test(password)) {
+            return res.status(400).json({ success: false, message: 'Password cannot contain spaces.' });
+        }
+
+        // ตรวจสอบว่า Username หรือ Email ซ้ำหรือไม่
         const request = new mssql.Request();
         request.input('username', mssql.NVarChar, username);
         request.input('email', mssql.NVarChar, email);
+        const userCheck = await request.query(`SELECT * FROM users WHERE username = @username OR email = @email`);
 
-        const result = await request.query('SELECT * FROM users WHERE username = @username OR email = @email');
-
-        if (result.recordset.length > 0) {
+        if (userCheck.recordset.length > 0) {
             return res.status(400).json({ success: false, message: 'Username or email already exists.' });
         }
 
+        if (!phoneRegex.test(phone)) {
+            return res.status(400).json({ success: false, message: 'Phone number must be exactly 10 digits.' });
+        }
+
+        // แฮชรหัสผ่าน
         const hashedPassword = await bcrypt.hash(password, 10);
-
-        // let profileImageUrl = "https://profilecs436.blob.core.windows.net/profile-images/default-profile.png.webp";
-
-        // if (req.file) {
-        //     const blobName = `${Date.now()}-${path.basename(req.file.originalname)}`;
-        //     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-
-        //     await blockBlobClient.uploadData(req.file.buffer, {
-        //         blobHTTPHeaders: { blobContentType: req.file.mimetype },
-        //     });
-
-        //     profileImageUrl = blockBlobClient.url;
-        // }
 
         request.input('hashedPassword', mssql.NVarChar, hashedPassword);
         request.input('firstName', mssql.NVarChar, firstName);
@@ -319,7 +306,7 @@ app.post('/signup', async (req, res) => {
         res.json({ success: true, message: 'Registration successful' });
     } catch (err) {
         console.error('Error during registration:', err);
-        res.status(500).json({ success: false, message: 'Failed to register user.' });
+        res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
     }
 });
 
