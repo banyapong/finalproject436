@@ -253,7 +253,7 @@ app.post('/signup', async (req, res) => {
     // Validation
     const noSpaceRegex = /^[^\s]+$/; // ห้ามมี space ทั้งหมด
     const nameRegex = /^[a-zA-Z]+$/; // Letters only
-    const phoneRegex = /^[0-9]{10}$/; // 10 digits only
+    // const phoneRegex = /^[0-9]{10}$/; // 10 digits only
     // const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|bumail\.net|bu\.ac\.th)$/; // Allowed email domains
 
     if (!noSpaceRegex.test(username)) {
@@ -276,9 +276,9 @@ app.post('/signup', async (req, res) => {
         return res.status(400).json({ success: false, message: 'Last Name can only contain letters.' });
     }
 
-    if (!phoneRegex.test(phone)) {
-        return res.status(400).json({ success: false, message: 'Phone number must be exactly 10 digits.' });
-    }
+    // if (!phoneRegex.test(phone)) {
+    //     return res.status(400).json({ success: false, message: 'Phone number must be exactly 10 digits.' });
+    // }
 
     try {
         const request = new mssql.Request();
