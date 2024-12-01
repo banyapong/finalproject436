@@ -112,38 +112,11 @@ function requireLogin(req, res, next) {
 }
 
 app.get('/check_session', async (req, res) => {
+    console.log('Checking session:', req.session);
     if (req.session && req.session.user) {
-        // try {
-        //     const userId = req.session.user.id;
-
-        //     // ตรวจสอบว่ามีค่า profile_image_url ใน session หรือไม่
-        //     if (!req.session.user.profile_image_url || req.session.user.profile_image_url.trim() === "") {
-        //         console.log("Fetching profile_image_url from database for user ID:", userId);
-
-        //         const request = new mssql.Request();
-        //         const result = await request
-        //             .input('user_id', mssql.Int, userId)
-        //             .query('SELECT profile_image_url FROM dbo.users WHERE id = @user_id');
-
-        //         if (result.recordset.length > 0) {
-        //             req.session.user.profile_image_url =
-        //                 result.recordset[0].profile_image_url || "https://profilecs436.blob.core.windows.net/profile-images/default-profile.png.webp";
-        //         }
-        //     }
-
-        //     res.json({
-        //         success: true,
-        //         user: {
-        //             email: req.session.user.email,
-        //             profile_image_url: req.session.user.profile_image_url,
-        //         },
-        //     });
-        // } catch (err) {
-        //     console.error("Error fetching profile image URL:", err);
-        //     res.status(500).json({ success: false, message: "Failed to fetch session" });
-        // }
+        res.json({ success: true, user: req.session.user });
     } else {
-        res.status(401).json({ success: false, message: "Unauthorized" });
+        res.status(401).json({ success: false, message: 'Unauthorized' });
     }
 });
 
@@ -161,11 +134,12 @@ app.get('/health', async (req, res) => {
 app.get('/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
-            console.error('Failed to destroy session:', err);
+            console.error('Error destroying session:', err);
             return res.status(500).json({ success: false, message: 'Failed to logout' });
         }
-        res.clearCookie('connect.sid'); // ลบ session cookie
-        res.redirect('/signin'); // redirect ไปที่หน้า signin
+        console.log('Session destroyed successfully.');
+        res.clearCookie('connect.sid');
+        res.redirect('/signin');
     });
 });
 
@@ -305,97 +279,58 @@ app.post('/signup', async (req, res) => {
 app.get('/fetch_message', requireLogin, async (req, res) => {
     const email = req.session.user?.email;
     const mode = req.query.mode || 'inbox';
+    console.log(`[FETCH MESSAGE] User: ${email}, Mode: ${mode}`);
 
     try {
         const request = new mssql.Request();
-        let query = '';
-
-        if (mode === 'inbox') {
-            query = `
-                SELECT 
-                    mails.id, 
-                    mails.sender, 
-                    mails.recipient, 
-                    mails.subject, 
-                    mails.message, 
-                    mails.sent_at, 
-                    mails.is_read_by_recipient AS is_read, 
-                    users.username AS sender_username,
-                FROM dbo.mails 
-                LEFT JOIN dbo.users ON dbo.mails.sender = dbo.users.email
-                WHERE recipient = @userEmail
-                ORDER BY mails.sent_at DESC
-            `;
-        } else if (mode === 'sent') {
-            query = `
-                SELECT 
-                    mails.id, 
-                    mails.sender, 
-                    mails.recipient, 
-                    mails.subject, 
-                    mails.message, 
-                    mails.sent_at, 
-                    mails.is_read_by_sender AS is_read, 
-                    users.username AS recipient_username,
-                FROM dbo.mails 
-                LEFT JOIN dbo.users ON dbo.mails.recipient = dbo.users.email
-                WHERE sender = @userEmail
-                ORDER BY mails.sent_at DESC
-            `;
-        }
+        const query = mode === 'inbox' 
+            ? `SELECT id, sender, subject, message, sent_at FROM dbo.mails WHERE recipient = @userEmail ORDER BY sent_at DESC`
+            : `SELECT id, recipient, subject, message, sent_at FROM dbo.mails WHERE sender = @userEmail ORDER BY sent_at DESC`;
 
         request.input('userEmail', mssql.NVarChar, email);
         const result = await request.query(query);
+        console.log(`[FETCH MESSAGE] Messages fetched:`, result.recordset);
 
         res.json(result.recordset);
     } catch (err) {
-        console.error('Error fetching messages:', err);
-        res.status(500).json({ success: false, message: 'Failed to fetch messages' });
+        console.error('[FETCH MESSAGE] Error:', err);
+        res.status(500).json({ success: false, message: 'Failed to fetch messages.' });
     }
 });
 
 // API สำหรับส่งอีเมล
-app.post('/send_email', async (req, res) => {
+app.post('/send_email', requireLogin, async (req, res) => {
     const { recipient, subject, message } = req.body;
-    const sender = req.session.user?.email; // ดึงอีเมลของผู้ส่งจาก session
+    const sender = req.session.user?.email;
+
+    console.log(`[SEND EMAIL] Sender: ${sender}, Recipient: ${recipient}, Subject: ${subject}, Message: ${message}`); // Log input data
 
     if (!sender || !recipient || !message) {
-        return res.status(400).json({ success: false, message: 'Sender, recipient, and message are required.' });
+        console.warn('[SEND EMAIL] Missing fields'); // Log warning
+        return res.status(400).json({ success: false, message: 'All fields are required.' });
     }
 
     try {
-        // บันทึกเมลลงฐานข้อมูล
         const request = new mssql.Request();
+        const recipientCheck = await request.input('recipient', mssql.NVarChar, recipient)
+            .query('SELECT email FROM dbo.users WHERE email = @recipient');
+
+        if (recipientCheck.recordset.length === 0) {
+            console.warn(`[SEND EMAIL] Recipient not found: ${recipient}`); // Log missing recipient
+            return res.status(404).json({ success: false, message: 'Recipient not found.' });
+        }
+
         request.input('sender', mssql.NVarChar, sender);
-        request.input('recipient', mssql.NVarChar, recipient);
         request.input('subject', mssql.NVarChar, subject || '');
         request.input('message', mssql.NVarChar, message);
         request.input('sent_at', mssql.DateTime, new Date());
 
-        await request.query(`
-            INSERT INTO dbo.mails (sender, recipient, subject, message, sent_at)
-            VALUES (@sender, @recipient, @subject, @message, @sent_at)
-        `);
-
-        // Log การส่งเมล
-        console.log(`Email sent from ${sender} to ${recipient}`);
-
-        // ส่ง Event แจ้งเตือนไปยังผู้ส่งโดยไม่สนใจว่าผู้รับออนไลน์หรือไม่
-        if (userSockets[recipient]) {
-            console.log(`Recipient ${recipient} is online. Sending new_mail notification.`);
-            io.to(userSockets[recipient]).emit('new_mail', {
-                sender,
-                subject,
-                message,
-            });
-        } else {
-            console.log(`Recipient ${recipient} is not online. No notification sent.`);
-        }        
-
-        res.json({ success: true, message: 'Message sent successfully' });
+        await request.query(`INSERT INTO dbo.mails (sender, recipient, subject, message, sent_at) VALUES (@sender, @recipient, @subject, @message, @sent_at)`);
+        console.log('[SEND EMAIL] Message sent successfully'); // Log success
+        res.json({ success: true, message: 'Message sent successfully.' });
     } catch (err) {
-        console.error('Error sending email:', err);
-        res.status(500).json({ success: false, message: 'Failed to send message' });
+        console.error('[SEND EMAIL] Error:', err); // Log errors
+        res.status(500).json({ success: false, message: 'Failed to send email.' });
     }
 });
 
@@ -492,36 +427,27 @@ app.get('/get_user', requireLogin, async (req, res) => {
 
 app.post('/mark_as_read', requireLogin, async (req, res) => {
     const { id, mode } = req.body;
+    console.log(`[MARK AS READ] ID: ${id}, Mode: ${mode}`); // Log input data
 
     if (!id || !mode) {
-        return res.status(400).json({ success: false, message: 'Message ID and mode are required' });
+        console.warn('[MARK AS READ] Missing ID or Mode'); // Log warning
+        return res.status(400).json({ success: false, message: 'Message ID and mode are required.' });
     }
 
     try {
+        const column = mode === 'inbox' ? 'is_read_by_recipient' : 'is_read_by_sender';
         const request = new mssql.Request();
 
-        // อัปเดต `is_read_by_recipient` สำหรับ `inbox` และ `is_read_by_sender` สำหรับ `sent`
-        const query = `
-            UPDATE dbo.mails
-            SET ${mode === 'inbox' ? 'is_read_by_recipient' : 'is_read_by_sender'} = 1
-            WHERE id = @id AND ${mode === 'inbox' ? 'recipient' : 'sender'} = @userEmail
-        `;
-
-        request.input('id', mssql.Int, id);
-        request.input('userEmail', mssql.NVarChar, req.session.user.email);
-
-        const result = await request.query(query);
-
-        if (result.rowsAffected[0] === 0) {
-            return res.status(404).json({ success: false, message: 'Message not found or unauthorized' });
-        }
-
-        res.json({ success: true, message: 'Message marked as read' });
+        await request.input('id', mssql.Int, id).query(`UPDATE dbo.mails SET ${column} = 1 WHERE id = @id`);
+        console.log(`[MARK AS READ] Message ID ${id} marked as read.`); // Log success
+        res.json({ success: true, message: 'Message marked as read.' });
     } catch (err) {
-        console.error('Error marking message as read:', err);
-        res.status(500).json({ success: false, message: 'Failed to mark message as read' });
+        console.error('[MARK AS READ] Error:', err); // Log errors
+        res.status(500).json({ success: false, message: 'Failed to mark message as read.' });
     }
 });
+
+
 
 // Start Server
 app.listen(port, () => console.log(`Server is running on port ${port}`));

@@ -23,15 +23,11 @@
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
                 >
-                    <strong id="profile-email">user@example.com</strong>
-                    <!-- <img src="image/profile-placeholder.png" alt="Profile Picture" class="profile-image" id="navbar-profile-image"> -->
+                    <strong id="profile-email">Loading...</strong>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                    <li class="text-center">
-                        <!-- <img src="image/profile-placeholder.png" alt="Profile Picture" class="profile-image-large mb-2" id="dropdown-profile-image"> -->
-                    </li>
                     <li class="dropdown-header text-center">
-                        <strong id="profile-email">user@example.com</strong>
+                        <strong id="dropdown-email">Loading...</strong>
                     </li>
                     <li>
                         <a class="dropdown-item" href="#" id="manage-account-btn">Manage Account</a>
@@ -52,16 +48,16 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <ul>
-                <li id="inbox">
+                <li id="inbox" data-content="Inbox Messages">
                     <img src="image/mail.png" alt="Inbox Icon"> Email Box
                 </li>
-                <li id="sent">
+                <li id="sent" data-content="Sent Messages">
                     <img src="image/chat.png" alt="Sent Icon"> Sent
                 </li>
-                <li id="document">
+                <li id="document" data-content="Documents">
                     <img src="image/file.png" alt="Document Icon"> Document
                 </li>
-                <li id="draft">
+                <li id="draft" data-content="Draft Emails">
                     <img src="image/mail.png" alt="Draft Icon"> Draft Email
                 </li>
             </ul>
@@ -69,7 +65,6 @@
 
         <!-- Main Content -->
         <div id="main-content" class="content-container">
-            <!-- <img src="image/logo.png" alt="Logo" class="logo" id="initial-logo"> -->
         </div>
     </div>
 
@@ -101,68 +96,46 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", async () => {
+            console.log("Attempting to fetch session...");
+            try {
+                const response = await fetch("/check_session");
+                console.log("Response received:", response);
+
+                const result = await response.json();
+                console.log("Session result:", result);
+
+                if (result.success) {
+                    const email = result.user.email;
+                    document.getElementById("profile-email").textContent = email;
+                    document.getElementById("dropdown-email").textContent = email;
+                } else {
+                    console.warn("Session not valid, redirecting...");
+                    window.location.href = "/signin";
+                }
+            } catch (error) {
+                console.error("Error fetching session:", error);
+                window.location.href = "/signin";
+            }
+
+            // Sidebar Navigation
             const sidebarItems = document.querySelectorAll(".sidebar ul li");
-            const mainContent = document.querySelector(".main-content");
-            console.log("DOMContentLoaded triggered");
+            const mainContent = document.getElementById("main-content");
 
-            // Add click event listener to each sidebar item
-            sidebarItems.forEach((item) => {
+            sidebarItems.forEach(item => {
                 item.addEventListener("click", () => {
-                    // Remove "active" class from all items
-                    sidebarItems.forEach((i) => i.classList.remove("active", "clicked"));
+                    // Remove active class from all items
+                    sidebarItems.forEach(i => i.classList.remove("active"));
 
-                    // Add "active" and "clicked" class to the clicked item
-                    item.classList.add("active", "clicked");
+                    // Add active class to the clicked item
+                    item.classList.add("active");
 
                     // Update main content dynamically
-                    const content = item.getAttribute("data-content") || "Content not available.";
-                    mainContent.innerHTML = `<h2>${content}</h2>`;
+                    mainContent.innerHTML = `<h2>${item.getAttribute("data-content")}</h2>`;
 
-                    // Scroll to the main content
-                    mainContent.scrollIntoView({
-                        behavior: "smooth", // เลื่อนแบบ Smooth
-                        block: "start", // เริ่มจากจุดบนสุดของเนื้อหา
-                    });
+                    // Scroll to main content
+                    mainContent.scrollIntoView({ behavior: "smooth" });
                 });
             });
-
-            document.querySelectorAll('.sidebar ul li').forEach((menuItem) => {
-                menuItem.addEventListener('click', (event) => {
-                    // Highlight the clicked menu item
-                    document.querySelectorAll('.sidebar ul li').forEach((item) => {
-                        item.style.backgroundColor = '#f9f9f9'; // Reset background color
-                    });
-                    event.target.style.backgroundColor = '#E8E8FF'; // Highlight clicked item
-
-                    // Smooth scroll to main content
-                    const mainContent = document.getElementById('main-content');
-                    mainContent.scrollIntoView({ behavior: 'smooth' });
-                });
-            });
-
-            // Fetch session information
-            fetch("/check_session")
-                .then((response) => response.json())
-                .then((result) => {
-                    if (result.success) {
-                        console.log("Session Check Success:", result);
-                        const profileImageUrl =
-                            result.user.profile_image_url && result.user.profile_image_url.trim() !== ""
-                                ? result.user.profile_image_url
-                                : "https://profilecs436.blob.core.windows.net/profile-images/default-profile.png.webp";
-
-                        document.getElementById("navbar-profile-image").src = profileImageUrl;
-                        document.getElementById("dropdown-profile-image").src = profileImageUrl;
-                        document.getElementById("profile-email").innerText = result.user.email;
-                    } else {
-                        console.warn("Session expired. Redirecting to signin.");
-                        window.location.href = "/signin";
-                    }
-                })
-                .catch((err) => {
-                    console.error("Error fetching session:", err);
-                    window.location.href = "/signin";
-                });
 
             // Event listener for Inbox button
             document.getElementById("inbox").addEventListener("click", () => {
@@ -170,7 +143,6 @@
                 fetchMessages("inbox");
             });
 
-            // Event listener for Sent button
             document.getElementById("sent").addEventListener("click", () => {
                 console.log("Sent clicked");
                 fetchMessages("sent");
@@ -297,47 +269,6 @@
                     });
             });
 
-             // Prevent File Picker from being triggered unnecessarily
-            // const profileUploadInput = document.getElementById("profile-upload-input");
-            // profileUploadInput.addEventListener("click", (e) => {
-            //     e.stopPropagation();
-            //     console.log("File Picker clicked.");
-            // });
-
-            // profileUploadInput.addEventListener("change", async (e) => {
-            // profileImageInput.addEventListener("change", async (e) => {
-            //     const file = e.target.files[0];
-            //     if (!file) return;
-
-            //     const formData = new FormData();
-            //     formData.append("profile_image", file);
-
-            //     try {
-            //         const response = await fetch("/upload_profile", {
-            //             method: "POST",
-            //             body: formData,
-            //         });
-
-            //         const result = await response.json();
-            //         if (result.success) {
-            //             alert("Profile image updated successfully!");
-            //             alert("Profile picture updated successfully!");
-
-            //             // อัปเดตรูปภาพโปรไฟล์ใน navbar และ dropdown
-            //             document.getElementById("navbar-profile-image").src = result.url;
-            //             document.getElementById("dropdown-profile-image").src = result.url;
-
-            //             // Refresh เนื้อหาโปรไฟล์
-            //             document.getElementById("manage-account-btn").click(); // Load profile details again
-            //         } else {
-            //             alert("Failed to update profile image.");
-            //             alert("Failed to update profile picture.");
-            //         }
-            //     } catch (err) {
-            //         console.error("Error during profile upload:", err);
-            //     }
-            // });
-
             // Debugging Events for Label Trigger
             document.querySelector("label[for='profile-upload-input']").addEventListener("click", (e) => {
                 e.stopPropagation();
@@ -348,138 +279,57 @@
     // });
         let currentMode = 'inbox'; // เก็บสถานะโหมดเริ่มต้นเป็น Inbox
 
-        async function fetchMessages(mode = 'inbox') {
+        async function fetchMessages(mode = "inbox") {
+            console.log(`Fetching messages for mode: ${mode}`);
             try {
-                currentMode = mode; // อัปเดตสถานะโหมด
                 const response = await fetch(`/fetch_message?mode=${mode}`);
                 const messages = await response.json();
 
-                const container = document.getElementById('main-content');
-                const logo = document.getElementById('initial-logo');
-
+                const container = document.getElementById("main-content");
                 if (messages.length > 0) {
-                    if (logo) logo.style.display = 'none';
-                    container.classList.add('active-content');
-
-                    container.innerHTML = `
-                        <div class="message-box">
-                            <div class="message-box-header">
-                                <h2 class="message-box-title">${mode === 'inbox' ? 'Inbox Messages' : 'Sent Messages'}</h2>
-                                <button id="refresh-button" onclick="fetchMessages('${mode}')">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
-                                <input id="search-input" type="text" placeholder="Search by ${mode === 'inbox' ? 'sender' : 'recipient'}" />
-                                <select id="search-mode" style="display: none;">
-                                    <option value="${mode === 'inbox' ? 'sender' : 'recipient'}"></option>
-                                </select>
-                            </div>
-                            <div id="messages-container" class="messages-container">
-                                ${messages.map(msg => `
-                                    <div class="message-item ${msg.is_read ? 'read' : 'unread'}" data-id="${msg.id}">
-                                        <div class="message-content">
-                                            <h3 class="${mode === 'inbox' ? 'sender' : 'recipient'}">
-                                                ${mode === 'inbox' ? (msg.sender || 'Unknown Sender') : (msg.recipient || 'Unknown Recipient')}
-                                            </h3>
-                                            <p class="message-subject">${msg.subject || 'No Subject'}</p>
-                                            <p class="message-preview">${msg.message.slice(0, 50) || 'No Content'}...</p>
-                                            <small class="message-time">${new Date(msg.sent_at).toLocaleString()}</small>
-                                        </div>
-                                        <button class="delete-button" onclick="deleteMessage(event, ${msg.id})">🗑️</button>
-                                    </div>
-                                `).join('')}
-                            </div>
+                    container.innerHTML = messages.map((msg) => `
+                        <div class="message-item" onclick="viewMessage('${encodeURIComponent(JSON.stringify(msg))}')">
+                            <h3>${mode === "inbox" ? msg.sender : msg.recipient}</h3>
+                            <p><strong>${msg.subject || "No Subject"}</strong></p>
+                            <small>${new Date(msg.sent_at).toLocaleString()}</small>
                         </div>
-                    `;
-
-                    // เพิ่ม event listeners ให้กับเมล
-                    const messageItems = document.querySelectorAll('.message-item');
-                    messageItems.forEach(item => {
-                        const messageId = item.getAttribute('data-id');
-                        item.addEventListener('click', () => {
-                            const message = messages.find(msg => msg.id == messageId);
-                            if (message) {
-                                viewMessage(message);
-                            }
-                        });
-                    });
-
-                    // เรียกใช้งาน enableSearch() หลังจากสร้าง HTML เสร็จ
-                    enableSearch();
+                    `).join("");
                 } else {
-                    if (logo) logo.style.display = 'block';
-                    container.classList.remove('active-content');
-                    container.innerHTML = `<p style="text-align: center; margin-top: 20px;">No ${mode === 'inbox' ? 'received' : 'sent'} messages found.</p>`;
+                    container.innerHTML = "<p>No messages found.</p>";
                 }
             } catch (error) {
-                console.error('Error fetching messages:', error);
-                container.innerHTML = `<p style="text-align: center; margin-top: 20px;">Error fetching messages.</p>`;
+                console.error("Error fetching messages:", error);
+                document.getElementById("main-content").innerHTML = `<p>Error loading emails. Please try again later.</p>`;
             }
         }
 
-        function viewMessage(mail) {
-            const container = document.getElementById('main-content');
-            const logo = document.getElementById('initial-logo');
-            if (logo) logo.style.display = 'none';
+        // ฟังก์ชันสำหรับอ่านเมล
+        function viewMessage(encodedMailData) {
+            const mail = JSON.parse(decodeURIComponent(encodedMailData)); // Decode และ parse JSON data
+            console.log(`[VIEW MESSAGE] Mail:`, mail); // Log mail object
 
-            // เลือกข้อมูลผู้ส่งหรือผู้รับตามโหมด
-            const username = currentMode === 'inbox' ? mail.sender_username : mail.recipient_username;
-            const email = currentMode === 'inbox' ? mail.sender : mail.recipient;
-            const profileImage = mail.profile_image || 'https://profilecs436.blob.core.windows.net/profile-images/default-profile.png.webp';
-
+            const container = document.getElementById("main-content");
             container.innerHTML = `
                 <div class="mail-details">
-                    <button onclick="fetchMessages(currentMode)" class="back-button">
-                        &larr; Back to ${currentMode === 'inbox' ? 'Inbox' : 'Sent'}
-                    </button>
-                    <div class="mail-content">
-                        <div class="mail-header">
-                            <div class="profile-info">
-                                <img src="${profileImage}" alt="Profile Picture" class="profile-picture">
-                                <div class="profile-details">
-                                    <p class="username">
-                                        ${username || 'Unknown User'} 
-                                        <span class="email">(${email || 'Unknown'})</span>
-                                    </p>
-                                    <h2 class="mail-title">${mail.subject || 'No Subject'}</h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mail-body">
-                            <p style="white-space: pre-wrap;">${mail.message || 'No Content'}</p>
-                        </div>
-                        <p class="mail-time"><strong>Sent At:</strong> ${new Date(mail.sent_at).toLocaleString()}</p>
-                    </div>
+                    <button onclick="fetchMessages('inbox')" class="back-button">&larr; Back</button>
+                    <h2>${mail.subject || "No Subject"}</h2>
+                    <p><strong>From:</strong> ${mail.sender}</p>
+                    <p>${mail.message}</p>
+                    <p><small>${new Date(mail.sent_at).toLocaleString()}</small></p>
                 </div>
             `;
 
-            // อัปเดตสถานะเป็นอ่าน
+            // Mark email as read
             fetch('/mark_as_read', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ id: mail.id, mode: currentMode }), // เพิ่ม mode
+                body: JSON.stringify({ id: mail.id, mode: 'inbox' }),
             })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Failed to mark as read');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log(data.message);
-
-                    // อัปเดตสถานะใน UI
-                    const messageElement = document.querySelector(`.message-item[data-id="${mail.id}"]`);
-                    if (messageElement) {
-                        messageElement.classList.remove('unread');
-                        messageElement.classList.add('read');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error marking message as read:', error);
-                });
-
+                .then(response => response.json())
+                .then(data => console.log(`[VIEW MESSAGE] Mark as read response:`, data))
+                .catch(err => console.error('[VIEW MESSAGE] Error marking as read:', err));
         }
 
         async function deleteMessage(event, id) {
@@ -514,46 +364,32 @@
             document.getElementById('popup-form').style.display = 'none';
         });
 
-        document.getElementById('compose-form').addEventListener('submit', async (e) => {
+        document.getElementById("compose-form").addEventListener("submit", async (e) => {
             e.preventDefault();
-
-            const formData = new FormData(e.target);
             const data = {
-                recipient: formData.get('recipient'),
-                subject: formData.get('subject'),
-                message: formData.get('message'),
+                recipient: document.getElementById("recipient").value,
+                subject: document.getElementById("subject").value,
+                message: document.getElementById("message").value,
             };
 
             try {
-                const response = await fetch('/send_email', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                const response = await fetch("/send_email", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(data),
                 });
 
                 const result = await response.json();
                 if (result.success) {
-                    alert(result.message);
-
-                    // ซ่อนฟอร์มการส่งเมล
-                    document.getElementById('popup-form').style.display = 'none';
-
-                    // ล้างข้อมูลในฟอร์ม
-                    document.getElementById('compose-form').reset();
-
-                    // Refresh ข้อมูลกล่องข้อความ
-                    fetchMessages(currentMode); // Refresh inbox or sent messages
+                    alert("Message sent successfully!");
+                    document.getElementById("popup-form").style.display = "none";
+                    document.getElementById("compose-form").reset();
                 } else {
                     alert(result.message);
                 }
             } catch (error) {
-                console.error('Error sending message:', error);
+                console.error("Error sending message:", error);
             }
-        });
-
-        document.getElementById("profile-upload-input").addEventListener("click", (e) => {
-            e.stopPropagation(); // หยุด Event ไม่ให้กระจายไปยัง Parent
-            console.log("File Picker Triggered");
         });
 
         function enableSearch() {
