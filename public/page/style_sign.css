@@ -18,9 +18,9 @@ body, html {
 }
 
 body {
-    background: linear-gradient(-45deg, #D1C4E9, #E8DFFF, #C37B4E, #F5E3D9);
+    /* background: linear-gradient(-45deg, #D1C4E9, #E8DFFF, #C37B4E, #F5E3D9); */
     background-size: 300% 300%;
-    animation: gradient-shift 10s ease infinite;
+    /* animation: gradient-shift 10s ease infinite; */
     overflow: hidden;
     position: relative;
     color: #333;
@@ -130,21 +130,21 @@ body {
 
 /* Navbar */
 .navbar {
-    width: 90%;
-    max-width: 1200px;
-    background: rgba(255, 255, 255, 0.9);
-    margin-top: 20px;
+    width: 100%;
+    /* max-width: 1200px; */
+    background: rgba(11, 205, 111, 0.9);
+    /* margin-top: 20px; */
     padding: 15px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-radius: 10px;
+    border-radius: 0px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .navbar .nav-link {
     font-size: 1rem;
-    color: #4B0082;
+    color: blue;
     text-decoration: none;
     margin-left: 15px;
     transition: color 0.3s ease-in-out;
@@ -176,7 +176,7 @@ body {
 .navbar .navbar-brand {
     font-size: 1.5rem;
     font-weight: bold;
-    color: #4B0082;
+    color: black;
     text-decoration: none;
 }
 
@@ -192,24 +192,24 @@ body {
 }
 
 .navbar .btn-primary {
-    background-color: #4B0082;
-    color: white;
-    border: none;
+    background-color: white;
+    color: black;
+    border: 2px solid black;
 }
 
 .navbar .btn-primary:hover {
-    background-color: #37006B;
-    transform: scale(1.1);
+    background-color: rgb(90, 90, 90);
+    color: white;
 }
 
 .navbar .btn-secondary {
     background-color: white;
-    color: #4B0082;
-    border: 2px solid #4B0082;
+    color: black;
+    border: 2px solid black;
 }
 
 .navbar .btn-secondary:hover {
-    background-color: #4B0082;
+    background-color: rgb(90, 90, 90);
     color: white;
 }
 
@@ -226,7 +226,7 @@ body {
 }
 
 .form-container h3 {
-    color: #4B0082;
+    color: black;
     font-size: 1.8rem;
     margin-bottom: 20px;
     font-weight: bold;
@@ -239,7 +239,7 @@ body {
 
 .form-group label {
     font-size: 1rem;
-    color: #4B0082;
+    color: black;
     margin-bottom: 5px;
     display: block;
 }
@@ -248,16 +248,16 @@ body {
     width: 100%;
     padding: 10px;
     border-radius: 8px;
-    border: 1px solid #b0bec5;
-    background-color: #F3E5FF;
+    border: 1px solid black;
+    background-color: whitesmoke;
     outline: none;
     font-size: 1rem;
     transition: all 0.3s ease-in-out;
 }
 
 .form-group input:focus {
-    border-color: #4B0082;
-    box-shadow: 0 0 8px rgba(75, 0, 130, 0.2);
+    border-color: black;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 }
 
 .form-buttons {
@@ -278,24 +278,25 @@ body {
 }
 
 .form-buttons .btn-primary {
-    background-color: #4B0082;
-    color: #ffffff;
-    border: none;
+    background-color: white;
+    color: black;
+    border: 2px solid black;
 }
 
 .form-buttons .btn-primary:hover {
-    background-color: #37006b;
+    background-color: rgb(90, 90, 90);
+    color: white;
 }
 
 .form-buttons .btn-secondary {
-    background-color: #ffffff;
-    color: #4B0082;
-    border: 2px solid #4B0082;
+    background-color: white;
+    color: black;
+    border: 2px solid black;
 }
 
 .form-buttons .btn-secondary:hover {
-    background-color: #4B0082;
-    color: #ffffff;
+    background-color: rgb(90, 90, 90);
+    color: white;
 }
 
 .signup-link {
@@ -304,7 +305,7 @@ body {
 }
 
 .signup-link a {
-    color: #4B0082;
+    color: black;
     text-decoration: none;
     font-weight: bold;
 }
@@ -315,7 +316,7 @@ body {
 
 /* Links */
 p a {
-    color: #4B0082;
+    color: black;
     text-decoration: none;
 }
 
@@ -473,24 +474,25 @@ p a:hover {
     }
 
     .navbar-nav .btn-primary {
-        background-color: #4B0082; /* สีพื้นหลัง */
-        color: #fff; /* สีตัวอักษร */
-        border: none; /* ไม่มีเส้นขอบ */
+        background-color: white;
+        color: black;
+        border: 2px solid black;
     }
 
     .navbar-nav .btn-primary:hover {
-        background-color: #37006B; /* สีพื้นหลังเมื่อ Hover */
+        background-color: rgb(90, 90, 90);
+        color: white;
     }
 
     .navbar-nav .btn-secondary {
-        background-color: #fff; /* สีพื้นหลัง */
-        color: #4B0082; /* สีตัวอักษร */
-        border: 2px solid #4B0082; /* เส้นขอบ */
+        background-color: white;
+        color: black;
+        border: 2px solid black;
     }
 
     .navbar-nav .btn-secondary:hover {
-        background-color: #4B0082; /* สีพื้นหลังเมื่อ Hover */
-        color: #fff; /* สีตัวอักษรเมื่อ Hover */
+        background-color: rgb(90, 90, 90);
+        color: white;
     }
 
     .form-container{
