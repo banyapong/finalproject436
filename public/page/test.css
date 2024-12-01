@@ -18,9 +18,9 @@ body, html {
 
 body {
     font-family: 'Arial', sans-serif;
-    background: linear-gradient(-45deg, #D1C4E9, #E8DFFF, #C37B4E, #F5E3D9);
+    /* background: linear-gradient(-45deg, #D1C4E9, #E8DFFF, #C37B4E, #F5E3D9); */
     background-size: 300% 300%;
-    animation: gradient-shift 10s ease infinite;
+    /* animation: gradient-shift 10s ease infinite; */
     overflow: hidden;
     position: relative;
     color: #333;
@@ -52,7 +52,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #4B0082;
+    background-color: white;
     z-index: 9999;
     opacity: 0;
     pointer-events: none;
@@ -72,24 +72,22 @@ body {
 /* Navbar */
 .navbar {
     position: fixed; /* ติด Navbar ไว้ที่ด้านบน */
-    top: 20px; /* ระยะห่างจากด้านบน */
-    left: 50%; /* ระยะห่างจากด้านซ้าย 50% */
-    transform: translateX(-50%); /* ย้ายกลับครึ่งหนึ่งของความกว้างเพื่อให้อยู่ตรงกลาง */
-    width: 90%; /* ความกว้างเต็ม 90% ของหน้าจอ */
-    max-width: 1200px; /* จำกัดความกว้างสูงสุด */
-    background: rgba(255, 255, 255, 0.9); /* พื้นหลังโปร่งแสง */
+    top: 0px; /* ระยะห่างจากด้านบน */
+    width: 100%; /* ความกว้างเต็ม 90% ของหน้าจอ */
+    /* max-width: 1200px; */
+    background: rgba(11, 205, 111, 0.9); /* พื้นหลังโปร่งแสง */
     padding: 15px 20px; /* เพิ่ม Padding ภายใน */
     display: flex; /* ใช้ Flexbox */
     justify-content: space-between; /* จัดวางไอเท็มซ้าย-ขวา */
     align-items: center; /* จัดแนวไอเท็มให้อยู่ตรงกลาง */
     z-index: 1000; /* ทำให้ Navbar อยู่เหนือองค์ประกอบอื่น */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* เพิ่มเงา */
-    border-radius: 10px; /* มุมโค้ง */
+    border-radius: 0px; /* มุมโค้ง */
 }
 
 .navbar .nav-link {
     font-size: 1rem;
-    color: #4B0082;
+    color: blue;
     text-decoration: none;
     margin-left: 15px;
     transition: color 0.3s ease-in-out;
@@ -116,13 +114,13 @@ body {
 
 
 .navbar .nav-link:hover {
-    color: #37006b;
+    color: #ffffff;
 }
 
 .navbar .navbar-brand {
     font-size: 1.5rem;
     font-weight: bold;
-    color: #4B0082;
+    color: black;
     text-decoration: none;
 }
 
@@ -138,24 +136,24 @@ body {
 }
 
 .navbar .btn-primary {
-    background-color: #4B0082;
-    color: white;
-    border: none;
+    background-color: white;
+    color: black;
+    border: 2px solid black;
 }
 
 .navbar .btn-primary:hover {
-    background-color: #37006B;
-    transform: scale(1.1);
+    background-color: rgb(90, 90, 90);
+    color: white;
 }
 
 .navbar .btn-secondary {
     background-color: white;
-    color: #4B0082;
-    border: 2px solid #4B0082;
+    color: black;
+    border: 2px solid black;
 }
 
 .navbar .btn-secondary:hover {
-    background-color: #4B0082;
+    background-color: rgb(90, 90, 90);
     color: white;
 }
 
@@ -238,21 +236,21 @@ body {
 
 /* Hero Section */
 .hero-section {
-    margin-top: 100px;
+    margin-top: 1;
     text-align: center;
     z-index: 5;
 }
 
 .hero-section h1 {
     font-size: 3rem;
-    color: #4B0082;
+    color: black;
     margin-bottom: 20px;
-    animation: fade-in 1.5s ease-in-out;
+    /* animation: fade-in 2s fade-in-out; */
 }
 
 .hero-section p {
     font-size: 1.2rem;
-    color: #555;
+    color: #272727;
     margin-bottom: 30px;
 }
 

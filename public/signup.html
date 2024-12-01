@@ -9,7 +9,7 @@
 <body>
     <!-- Navbar -->
     <nav class="navbar">
-        <a class="navbar-brand" href="index.html">LTCH Project CS436</a>
+        <a class="navbar-brand" href="index.html">CDEX</a>
         <button class="menu-toggle" id="menu-toggle">☰</button>
         <div class="navbar-nav" id="navbar-nav">
             <a href="signin.html" class="btn btn-primary nav-link" id="signin-link">Sign In</a>
@@ -19,24 +19,8 @@
 
     <!-- Sign Up Form -->
     <div class="form-container">
-        <h3>Register Page</h3>
+        <h3>Registration</h3>
         <form id="signup-form" method="POST">
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" placeholder="Enter your email" required>
-            </div>
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" placeholder="Enter your username" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Enter your password" required>
-            </div>
-            <div class="form-group">
-                <label for="confirmPassword">Confirm Password</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
-            </div>
             <div class="form-group">
                 <label for="firstName">First Name</label>
                 <input type="text" id="firstName" name="firstName" placeholder="Enter your first name" required>
@@ -45,11 +29,19 @@
                 <label for="lastName">Last Name</label>
                 <input type="text" id="lastName" name="lastName" placeholder="Enter your last name" required>
             </div>
-
             <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+
+            <!-- <div class="form-group">
                 <label for="profileImage">Profile Image</label>
                 <input type="file" id="profileImage" name="profileImage" accept="image/*">
-            </div>
+            </div> -->
 
             <div class="form-group">
                 <label for="phone">Phone Number</label>
@@ -62,7 +54,15 @@
                     pattern="[0-9]{10}"
                     title="Phone number must be exactly 10 digits"
                 >
-            </div>            
+            </div>      
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
+            </div>      
 
             <!-- Buttons for 'Go Back' and 'Sign Up' -->
             <div class="form-buttons">
@@ -70,7 +70,7 @@
                 <button type="submit" class="btn btn-primary">Sign Up</button>
             </div>
         </form>
-        <p class="signup-link">Already have an account? Let <a href="signin.html">Sign In!</a></p>
+        <p class="signup-link">Already have an account? <a href="signin.html">Sign In</a></p>
     </div>
 
     <script>
@@ -111,17 +111,17 @@
             const noSpaceRegex = /^[^\s]+$/; // ห้ามมี space ทั้งหมด
             const nameRegex = /^[a-zA-Z]+$/; // Letters only
             const phoneRegex = /^[0-9]{10}$/; // 10 digits only
-            const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|bumail\.net|bu\.ac\.th)$/; // Allowed domains
+            // const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|bumail\.net|bu\.ac\.th)$/; // Allowed domains
 
             if (!noSpaceRegex.test(username)) {
                 alert('Username cannot contain spaces.');
                 return;
             }
 
-            if (!emailRegex.test(email)) {
-                alert('Email must be a valid @gmail.com, @bumail.net, or @bu.ac.th address.');
-                return;
-            }
+            // if (!emailRegex.test(email)) {
+            //     alert('Email must be a valid @gmail.com, @bumail.net, or @bu.ac.th address.');
+            //     return;
+            // }
 
             if (!noSpaceRegex.test(password)) {
                 alert('Password cannot contain spaces.');
@@ -157,10 +157,10 @@
             formData.append('lastName', lastName);
             formData.append('phone', phone);
 
-            const profileImage = document.getElementById('profileImage').files[0];
-            if (profileImage) {
-                formData.append('profileImage', profileImage);
-            }
+            // const profileImage = document.getElementById('profileImage').files[0];
+            // if (profileImage) {
+            //     formData.append('profileImage', profileImage);
+            // }
 
             try {
                 const response = await fetch('/signup', {
