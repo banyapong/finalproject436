@@ -99,15 +99,19 @@
         document.getElementById('signup-form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const email = document.getElementById('email').value.trim();
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const confirmPassword = document.getElementById('confirmPassword').value.trim();
-            const firstName = document.getElementById('firstName').value.trim();
-            const lastName = document.getElementById('lastName').value.trim();
-            const phone = document.getElementById('phone').value.trim();
+            const data = {
+                email: document.getElementById('email').value.trim(),
+                username: document.getElementById('username').value.trim(),
+                password: document.getElementById('password').value.trim(),
+                confirmPassword: document.getElementById('confirmPassword').value.trim(),
+                firstName: document.getElementById('firstName').value.trim(),
+                lastName: document.getElementById('lastName').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+            };
 
             // Validation
+            if (data.password !== data.confirmPassword) {
+
             const noSpaceRegex = /^[^\s]+$/; // ห้ามมี space ทั้งหมด
             const nameRegex = /^[a-zA-Z]+$/; // Letters only
             const phoneRegex = /^[0-9]{10}$/; // 10 digits only
@@ -148,24 +152,13 @@
                 return;
             }
 
-            const formData = new FormData();
-            formData.append('email', email);
-            formData.append('username', username);
-            formData.append('password', password);
-            formData.append('confirmPassword', confirmPassword);
-            formData.append('firstName', firstName);
-            formData.append('lastName', lastName);
-            formData.append('phone', phone);
-
-            // const profileImage = document.getElementById('profileImage').files[0];
-            // if (profileImage) {
-            //     formData.append('profileImage', profileImage);
-            // }
-
             try {
                 const response = await fetch('/signup', {
                     method: 'POST',
-                    body: formData,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
                 });
 
                 const result = await response.json();
@@ -179,6 +172,8 @@
                 console.error('Error during registration:', err);
                 alert('An error occurred during registration. Please try again.');
             }
+        }
+
         });
 
         window.addEventListener('resize', function () {
