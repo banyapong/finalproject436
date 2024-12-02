@@ -28,10 +28,7 @@
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                     <li class="dropdown-header text-center">
                         <strong id="dropdown-email">Loading...</strong>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="#" id="manage-account-btn">Manage Account</a>
-                    </li>                  
+                    </li>    
                     <li>
                         <hr class="dropdown-divider">
                     </li>
@@ -49,16 +46,16 @@
         <div class="sidebar">
             <ul>
                 <li id="inbox" data-content="Inbox Messages">
-                    <img src="image/mail.png" alt="Inbox Icon"> Email Box
+                    Email Box
                 </li>
                 <li id="sent" data-content="Sent Messages">
-                    <img src="image/chat.png" alt="Sent Icon"> Sent
+                    Sent
                 </li>
                 <li id="document" data-content="Documents">
-                    <img src="image/file.png" alt="Document Icon"> Document
+                    Document
                 </li>
                 <li id="draft" data-content="Draft Emails">
-                    <img src="image/mail.png" alt="Draft Icon"> Draft Email
+                    Draft Email
                 </li>
             </ul>
         </div>
@@ -292,6 +289,9 @@
                             <h3>${mode === "inbox" ? msg.sender : msg.recipient}</h3>
                             <p><strong>${msg.subject || "No Subject"}</strong></p>
                             <small>${new Date(msg.sent_at).toLocaleString()}</small>
+                            <div class="message-actions">
+                                <button class="delete-btn" onclick="deleteMessage(event, '${msg.id}')">Delete</button>
+                            </div>
                         </div>
                     `).join("");
                 } else {
